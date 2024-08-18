@@ -5,7 +5,10 @@ public class EscManager : MonoBehaviour
 {
     public GameObject pauseMenuUI;
     private bool isPaused = false;
-
+    void Start()
+    {
+        pauseMenuUI.SetActive(false);
+    }
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
