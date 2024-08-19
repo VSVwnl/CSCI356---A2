@@ -5,11 +5,13 @@ using UnityEngine;
 public class Shootable : MonoBehaviour
 {
     private EnemyHealth enemyHealth;
+    private Animator animator;
 
     private void Start()
     {
         // Get the EnemyHealth component from the same GameObject
         enemyHealth = GetComponent<EnemyHealth>();
+        animator = GetComponent<Animator>();
 
         if (enemyHealth == null)
         {
@@ -24,13 +26,18 @@ public class Shootable : MonoBehaviour
             // Reduce the enemy's health using the EnemyHealth script
             enemyHealth.TakeDamage(damage);
 
+            // Trigger hit animation
+            if (animator != null)
+            {
+                animator.SetBool("isHit", true);
+            }
+
             // Check if the enemy is dead
             if (enemyHealth.health <= 0)
             {
-                Debug.Log(gameObject.name + " is dead.");
-                // Handle the enemy's death (e.g., deactivate the object or trigger death animation)
-                gameObject.SetActive(false); 
+                gameObject.SetActive(false);
             }
         }
     }
+
 }

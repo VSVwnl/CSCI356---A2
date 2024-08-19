@@ -56,7 +56,6 @@ public class EnemyHealth : MonoBehaviour
     public void TakeDamage(float damage)
     {
         health -= damage; 
-        Debug.Log("Take "+ damage+ " Damage");
         UpdateHealthUI();
     }
  

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.0048089502, g: 0.004485363, b: 0.0025025841, a: 1}
+  m_IndirectSpecularColor: {r: 0.004808951, g: 0.0044853655, b: 0.0025025913, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2887,15 +2887,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f44896a0692087499d35e0d5d22f8fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 303763209}
   path: {fileID: 1181383432}
-  sightDistance: 3
+  sightDistance: 15
   fieldOfView: 40
-  eyeHeight: 1.5
+  eyeHeight: 0.5
   gunBarrel: {fileID: 147611747}
-  fireRate: 2
+  fireRate: 1
   currentState: 
   enemyUIPrefab: {fileID: 1873087090}
-  showGizmo: 1
 --- !u!114 &303763199
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3005,10 +3005,15 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!95 &303763209 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: cf77dfb4894918642b671bcaa424247e, type: 3}
+  m_PrefabInstance: {fileID: 1626273255}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &316198615
 GameObject:
   m_ObjectHideFlags: 0
@@ -4051,6 +4056,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 303763196}
+  - {fileID: 1181383431}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &451756388
@@ -8483,14 +8489,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1181383429}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -9.05, y: 0.3, z: -4.09}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1845339348}
   - {fileID: 1830968121}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 449381210}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1181383432
 MonoBehaviour:
@@ -12284,7 +12290,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cf77dfb4894918642b671bcaa424247e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cf77dfb4894918642b671bcaa424247e, type: 3}
       propertyPath: m_LocalPosition.z
@@ -17378,6 +17384,5 @@ SceneRoots:
   - {fileID: 959844245}
   - {fileID: 1045504686}
   - {fileID: 560837040}
-  - {fileID: 1181383431}
   - {fileID: 222023640}
   - {fileID: 449381210}

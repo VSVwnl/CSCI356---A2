@@ -8,10 +8,9 @@ public class Enemy : MonoBehaviour
     private StateMachine stateMachine;
     private NavMeshAgent agent;
     private GameObject player;
-    private Animator animator;
+    public Animator animator;
     public NavMeshAgent Agent { get => agent; }
     public GameObject Player { get => player; }
-    private bool isAttacking = false;
 
     public Path path;
     [Header("Sight Values")]
@@ -30,13 +29,13 @@ public class Enemy : MonoBehaviour
     public GameObject enemyUIPrefab; // Reference to the EnemyUI prefab
     private GameObject enemyUIInstance; // The instantiated EnemyUI object
 
-#if UNITY_EDITOR
-    public bool showGizmo = true;
-#endif
+    private bool isAttacking = false;
+    private bool isHit = false;
 
     // Start is called before the first frame update
     void Awake()
     {
+
         stateMachine = GetComponent<StateMachine>();
         agent = GetComponent<NavMeshAgent>();
         stateMachine.Initialise();
@@ -68,6 +67,16 @@ public class Enemy : MonoBehaviour
         {
             StopAttack();
         }
+
+        if (isHit)
+        {
+            HandleHit();
+        }
+        else
+        {
+            ResetHitState();
+        }
+
         currentState = stateMachine.activeState.ToString();
 
         // Keep the UI always facing the camera
@@ -134,26 +143,53 @@ public class Enemy : MonoBehaviour
         if (!isAttacking)
         {
             isAttacking = true;
-            agent.isStopped = true; // Stop the NavMeshAgent
-            agent.updateRotation = false; // Prevent automatic rotation
             if (animator != null)
             {
-                animator.SetBool("IsAttacking", true); // Trigger attack animation
+                animator.SetBool("isAttacking", true);
             }
         }
     }
+
     private void StopAttack()
     {
         if (isAttacking)
         {
             isAttacking = false;
-            agent.isStopped = false; // Resume NavMeshAgent
-            agent.updateRotation = true; // Resume automatic rotation
             if (animator != null)
             {
-                animator.SetBool("IsAttacking", false); // Stop attack animation
+                animator.SetBool("isAttacking", false);
             }
         }
     }
 
+    private void HandleHit()
+    {
+        if (animator != null)
+        {
+            animator.SetBool("isHit", true);
+            animator.SetBool("isAttacking", false); // Ensure attack is false when hit
+        }
+    }
+
+    private void ResetHitState()
+    {
+        if (animator != null)
+        {
+            animator.SetBool("isHit", false);
+        }
+    }
+
+
+    public void TakeDamage(int damage)
+    {
+        // Trigger hit animation
+        isHit = true;
+
+        // Handle health reduction
+        Shootable shootable = GetComponent<Shootable>();
+        if (shootable != null)
+        {
+            shootable.ApplyDamage(damage);
+        }
+    }
 }
