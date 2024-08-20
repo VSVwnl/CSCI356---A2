@@ -5,13 +5,13 @@ using UnityEngine;
 public class Shootable : MonoBehaviour
 {
     private EnemyHealth enemyHealth;
-    private Animator animator;
+    private Enemy enemy;
 
     private void Start()
     {
         // Get the EnemyHealth component from the same GameObject
         enemyHealth = GetComponent<EnemyHealth>();
-        animator = GetComponent<Animator>();
+        enemy = GetComponent<Enemy>();
 
         if (enemyHealth == null)
         {
@@ -26,18 +26,26 @@ public class Shootable : MonoBehaviour
             // Reduce the enemy's health using the EnemyHealth script
             enemyHealth.TakeDamage(damage);
 
-            // Trigger hit animation
-            if (animator != null)
+            // Trigger the hit animation
+            if (enemy != null)
             {
-                animator.SetBool("isHit", true);
+                enemy.TakeDamage(damage);
             }
 
             // Check if the enemy is dead
             if (enemyHealth.health <= 0)
             {
-                gameObject.SetActive(false);
+                StartCoroutine(DeactivateAfterReset()); // Coroutine to deactivate after resetting
             }
         }
     }
 
+    private IEnumerator DeactivateAfterReset()
+    {
+        // Wait until the hit state has been reset
+        yield return new WaitUntil(() => !enemy.isHit);
+
+        // Now it's safe to deactivate the GameObject
+        gameObject.SetActive(false);
+    }
 }

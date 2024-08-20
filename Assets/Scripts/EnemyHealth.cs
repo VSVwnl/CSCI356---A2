@@ -56,6 +56,7 @@ public class EnemyHealth : MonoBehaviour
     public void TakeDamage(float damage)
     {
         health -= damage; 
+        health = Mathf.Clamp(health, 0, maxHealth); // ensure health dont go below 0
         UpdateHealthUI();
     }
  

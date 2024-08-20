@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.0048089502, g: 0.004485363, b: 0.0025025841, a: 1}
+  m_IndirectSpecularColor: {r: 0.004808951, g: 0.0044853655, b: 0.0025025913, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1995,6 +1995,11 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!4 &212336776 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7303509675405381684, guid: 4b1d318961836cc419580977a3baaffb, type: 3}
+  m_PrefabInstance: {fileID: 1531256687}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &222023639
 GameObject:
   m_ObjectHideFlags: 0
@@ -11536,8 +11541,16 @@ PrefabInstance:
       value: 26.54
       objectReference: {fileID: 0}
     - target: {fileID: 5186267787028527319, guid: 4b1d318961836cc419580977a3baaffb, type: 3}
+      propertyPath: gun
+      value: 
+      objectReference: {fileID: 212336776}
+    - target: {fileID: 5186267787028527319, guid: 4b1d318961836cc419580977a3baaffb, type: 3}
+      propertyPath: fireRate
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5186267787028527319, guid: 4b1d318961836cc419580977a3baaffb, type: 3}
       propertyPath: eyeHeight
-      value: 0.5
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 5186267787028527319, guid: 4b1d318961836cc419580977a3baaffb, type: 3}
       propertyPath: m_Enabled
@@ -11545,11 +11558,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5186267787028527319, guid: 4b1d318961836cc419580977a3baaffb, type: 3}
       propertyPath: fieldOfView
-      value: 41.2
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 7147767637511649129, guid: 4b1d318961836cc419580977a3baaffb, type: 3}
       propertyPath: m_Name
       value: Enemies
+      objectReference: {fileID: 0}
+    - target: {fileID: 7328639508810102508, guid: 4b1d318961836cc419580977a3baaffb, type: 3}
+      propertyPath: m_Speed
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7328639508810102508, guid: 4b1d318961836cc419580977a3baaffb, type: 3}
       propertyPath: m_Height
@@ -11561,7 +11578,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7328639508810102508, guid: 4b1d318961836cc419580977a3baaffb, type: 3}
       propertyPath: m_BaseOffset
-      value: 0.02
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7328639508810102508, guid: 4b1d318961836cc419580977a3baaffb, type: 3}
+      propertyPath: m_Acceleration
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8535647990855418706, guid: 4b1d318961836cc419580977a3baaffb, type: 3}
       propertyPath: m_LocalPosition.y
@@ -13625,7 +13646,7 @@ MonoBehaviour:
   maxHealth: 100
   frontHealthBar: {fileID: 2036633440}
   backHealthBar: {fileID: 1642136142}
-  healthText: {fileID: 1992511340}
+  healthText: {fileID: 360929040}
 --- !u!114 &1818676227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15580,17 +15601,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &1992511340 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 317639295725888621, guid: 4b1d318961836cc419580977a3baaffb, type: 3}
-  m_PrefabInstance: {fileID: 1531256687}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2021774741
 GameObject:
   m_ObjectHideFlags: 0

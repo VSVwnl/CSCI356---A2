@@ -27,10 +27,9 @@ public class Enemy : MonoBehaviour
 
     [Header("UI")]
     public GameObject enemyUIPrefab; // Reference to the EnemyUI prefab
-    private GameObject enemyUIInstance; // The instantiated EnemyUI object
 
     private bool isAttacking = false;
-    private bool isHit = false;
+    public bool isHit = false;
 
     // Start is called before the first frame update
     void Awake()
@@ -44,12 +43,6 @@ public class Enemy : MonoBehaviour
         // Instantiate and set up the enemy UI
         if (enemyUIPrefab != null)
         {
-            // Transform parent = enemyUIPrefab.transform.parent;
-            // enemyUIPrefab.SetActive(true);
-            // enemyUIInstance = Instantiate(enemyUIPrefab, parent);
-
-            // enemyUIPrefab.SetActive(false);
-            // enemyUIInstance.transform.SetParent(transform, false); // Set the UI as a child of the enemy
             PositionUIAboveEnemy();
         }
     }
@@ -57,33 +50,27 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        bool playerInSight = CanSeePlayer();
+        if (!isHit) // Prevent other actions while hit animation is playing
+        {
+            bool playerInSight = CanSeePlayer();
 
-        if (playerInSight)
-        {
-            StartAttack();
-        }
-        else
-        {
-            StopAttack();
-        }
+            if (playerInSight)
+            {
+                StartAttack();
+            }
+            else
+            {
+                StopAttack();
+            }
 
-        if (isHit)
-        {
-            HandleHit();
-        }
-        else
-        {
-            ResetHitState();
-        }
+            currentState = stateMachine.activeState.ToString();
 
-        currentState = stateMachine.activeState.ToString();
-
-        // Keep the UI always facing the camera
-        if (enemyUIPrefab != null)
-        {
-            PositionUIAboveEnemy();
-            FaceCamera();
+            // Keep the UI always facing the camera
+            if (enemyUIPrefab != null)
+            {
+                PositionUIAboveEnemy();
+                FaceCamera();
+            }
         }
     }
 
@@ -162,34 +149,40 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void HandleHit()
-    {
-        if (animator != null)
-        {
-            animator.SetBool("isHit", true);
-            animator.SetBool("isAttacking", false); // Ensure attack is false when hit
-        }
-    }
-
-    private void ResetHitState()
-    {
-        if (animator != null)
-        {
-            animator.SetBool("isHit", false);
-        }
-    }
-
-
     public void TakeDamage(int damage)
     {
-        // Trigger hit animation
-        isHit = true;
-
-        // Handle health reduction
-        Shootable shootable = GetComponent<Shootable>();
-        if (shootable != null)
+        if (!isHit)
         {
-            shootable.ApplyDamage(damage);
+            isHit = true;
+            Debug.Log("Taking damage, setting isHit to true");
+            animator.SetBool("isHit", true);
+
+            if (isAttacking)
+            {
+                animator.SetBool("isAttacking", false);
+                isAttacking = false;
+            }
+
+            Shootable shootable = GetComponent<Shootable>();
+            if (shootable != null)
+            {
+                shootable.ApplyDamage(damage);
+            }
+
+            StartCoroutine(ResetHitState());
+        }
+    }
+
+    private IEnumerator ResetHitState()
+    {
+        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length); // Wait for hit animation to complete
+        isHit = false;  // Reset isHit flag
+        animator.SetBool("isHit", false);
+
+        // Resume attack if the player is still in sight
+        if (CanSeePlayer())
+        {
+            StartAttack();
         }
     }
 }
