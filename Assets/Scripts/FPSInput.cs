@@ -2,74 +2,79 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterController))] // enforces dependency on character controller
-[AddComponentMenu("Control Script/FPS Input")]  // add to the Unity editor's component menu
+[RequireComponent(typeof(CharacterController))]
 public class FPSInput : MonoBehaviour
 {
-    // movement sensitivity
     public float speed = 3.0f;
     public float sprintMultiplier = 3.5f;
-
-    // gravity setting
     public float gravity = -9.8f;
-
-    // reference to the character controller
-    private CharacterController charController;
-
-    // for jump
     public float jumpSpeed = 15.0f;
     public float terminalVelocity = -20.0f;
-    private float vertSpeed;
 
-    // Start is called before the first frame update
+    private CharacterController charController;
+    private Animator animator;
+    private float vertSpeed;
+    private bool isJumping;  // Track whether the character is in the middle of a jump
+
     void Start()
     {
-        // get the character controller component
         charController = GetComponent<CharacterController>();
+        animator = GetComponent<Animator>();  // Get the Animator component
     }
 
-    // Update is called once per frame
     void Update()
     {
         bool isSprinting = Input.GetMouseButton(1); // Right mouse button
-
-        // Determine movement speed
         float currentSpeed = isSprinting ? speed * sprintMultiplier : speed;
-        Debug.Log($"Sprinting: {isSprinting}, Current Speed: {currentSpeed}");
 
-        // changes based on WASD keys
+        // Calculate movement
         float deltaX = Input.GetAxis("Horizontal") * currentSpeed;
         float deltaZ = Input.GetAxis("Vertical") * currentSpeed;
         Vector3 movement = new Vector3(deltaX, 0, deltaZ);
 
-        // for jump
-        if (Input.GetButtonDown("Jump") && charController.isGrounded)
-        {
-            vertSpeed = jumpSpeed;
-        }
-        else if (!charController.isGrounded)
-        {
-            vertSpeed += gravity * 5 * Time.deltaTime;
+        // Set animation parameters
+        float animationSpeed = new Vector3(deltaX, 0, deltaZ).magnitude;
+        animator.SetFloat("Speed", animationSpeed);  // Update Speed parameter
+        animator.SetBool("IsSprinting", isSprinting);  // Update Sprinting parameter
 
+        // Handle jumping logic
+        if (charController.isGrounded)
+        {
+            if (!isJumping)  // Only reset vertSpeed when not jumping
+            {
+                vertSpeed = -1f;  // Apply a small constant downward force to stay grounded
+            }
+
+            // Jump if grounded and the jump button is pressed
+            if (Input.GetButtonDown("Jump"))
+            {
+                vertSpeed = jumpSpeed;
+                animator.SetBool("IsJumping", true);  // Trigger jump animation
+                isJumping = true;
+            }
+            else
+            {
+                animator.SetBool("IsJumping", false);  // Stop jump animation when grounded
+                isJumping = false;
+            }
+        }
+        else
+        {
+            // If in the air, apply gravity
+            vertSpeed += gravity * Time.deltaTime;
             if (vertSpeed < terminalVelocity)
             {
                 vertSpeed = terminalVelocity;
             }
+
+            isJumping = true;  // Still in the air
         }
 
-        // make diagonal movement consistent
+        // Apply movement including vertical speed (jump/fall)
         movement = Vector3.ClampMagnitude(movement, currentSpeed);
-
-        // add gravity in the vertical direction
         movement.y = vertSpeed;
-
-        // ensure movement is independent of the framerate
         movement *= Time.deltaTime;
-
-        // transform from local space to global space
         movement = transform.TransformDirection(movement);
-
-        // pass the movement to the character controller
         charController.Move(movement);
     }
 }
