@@ -52,7 +52,7 @@ namespace InfimaGames.LowPolyShooterPack
             
             //Destroy the audio game object, since we're not using it anymore.
             //This isn't really too great for performance, but it works, for now.
-            //DestroyImmediate(source.gameObject);
+            DestroyImmediate(source.gameObject);
         }
 
         /// <summary>
