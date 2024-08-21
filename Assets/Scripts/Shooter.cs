@@ -117,7 +117,7 @@ public class Shooter : MonoBehaviour
                         hit.rigidbody.AddForceAtPosition(impulse, hit.point, ForceMode.Impulse);
 
                         // reduce health of the Shootable object
-                        target.ApplyDamage(10);
+                        target.ApplyDamage(5);
 
                         // start coroutine to generate a bullet 
                         StartCoroutine(GenerateBullet(hit, point));
@@ -180,7 +180,7 @@ public class Shooter : MonoBehaviour
                         hit.rigidbody.AddForceAtPosition(impulse, hit.point, ForceMode.Impulse);
 
                         // reduce health of the Shootable object
-                        target.ApplyDamage(15); 
+                        target.ApplyDamage(10); 
 
                         // start coroutine to generate a particle system 
                         StartCoroutine(GeneratePS(hit));
@@ -230,7 +230,7 @@ public class Shooter : MonoBehaviour
                         hit.rigidbody.AddForceAtPosition(impulse, hit.point, ForceMode.Impulse);
 
                         // reduce health of the Shootable object
-                        target.ApplyDamage(20); 
+                        target.ApplyDamage(15); 
 
                         // start coroutine to generate a particle system 
                         StartCoroutine(GenerateAlotBullet(hit, point));

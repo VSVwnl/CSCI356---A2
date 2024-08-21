@@ -1,20 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class AttackState : BaseState
 {
     private float moveTimer;
     private float losePlayerTimer;
     private float shotTimer;
+    private NavMeshAgent agent;
     public override void Enter()
     {
-
+        agent = enemy.GetComponent<NavMeshAgent>();
+        if (agent != null)
+        {
+            agent.isStopped = true; // Stop the NavMeshAgent
+        }
     }
 
     public override void Exit()
     {
-
+        if (agent != null)
+        {
+            agent.isStopped = false; // Resume movement when exiting the attack state
+        }
     }
 
     public override void Perform()
@@ -26,7 +35,7 @@ public class AttackState : BaseState
             shotTimer += Time.deltaTime;
             enemy.transform.LookAt(enemy.Player.transform);
             // if shot timer > fireRate
-            if (shotTimer > enemy.fireRate)
+            if (!enemy.isHit && shotTimer > enemy.fireRate)
             {
                 Shoot();
             }

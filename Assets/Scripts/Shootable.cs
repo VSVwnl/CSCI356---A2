@@ -1,17 +1,17 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Shootable : MonoBehaviour
 {
     private EnemyHealth enemyHealth;
-    private Animator animator;
+    private Enemy enemy;
 
     private void Start()
     {
-        // Get the EnemyHealth component from the same GameObject
+        // Get the EnemyHealth and Enemy components from the same GameObject
         enemyHealth = GetComponent<EnemyHealth>();
-        animator = GetComponent<Animator>();
+        enemy = GetComponent<Enemy>();
 
         if (enemyHealth == null)
         {
@@ -23,21 +23,29 @@ public class Shootable : MonoBehaviour
     {
         if (enemyHealth != null)
         {
-            // Reduce the enemy's health using the EnemyHealth script
+            // Apply damage and trigger hit reactions
             enemyHealth.TakeDamage(damage);
 
-            // Trigger hit animation
-            if (animator != null)
+            if (enemy != null)
             {
-                animator.SetBool("isHit", true);
+                // Trigger the hit animation and damage reaction
+                enemy.TakeDamage(damage);
             }
 
-            // Check if the enemy is dead
+            // If the enemy's health reaches zero, trigger death
             if (enemyHealth.health <= 0)
             {
-                gameObject.SetActive(false);
+                // Ensure death is handled only once
+                if (!enemy.isDead)
+                {
+                    enemy.Die(); // Calls the Die() method in the Enemy script to handle death logic
+                }
             }
         }
     }
 
+    internal int GetHealth()
+    {
+        throw new NotImplementedException();
+    }
 }
