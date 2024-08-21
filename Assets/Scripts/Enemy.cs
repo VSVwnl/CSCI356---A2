@@ -24,6 +24,8 @@ public class Enemy : MonoBehaviour
     public float eyeHeight;
     [Header("Weapon Values")]
     public Transform gunBarrel;
+    public GameObject gun;
+
     [Range(0.1f, 10f)]
     public float fireRate; // Rate of fire in bullets per second
 
@@ -41,6 +43,11 @@ public class Enemy : MonoBehaviour
     public bool isDead = false;
     private float nextFireTime = 0f; // Time when the enemy can fire next
 
+    private Vector3 originalGunPosition;
+    private Quaternion originalGunRotation;
+    public Vector3 attackGunPosition = new Vector3(-0.11f, 1.65f, 0.25f);
+    public Quaternion attackGunRotation = Quaternion.Euler(16.754f, -226.9f, 20.652f);
+
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -53,19 +60,17 @@ public class Enemy : MonoBehaviour
         {
             PositionUIAboveEnemy();
         }
+
+        if (gun != null)
+        {
+            originalGunPosition = gun.transform.localPosition;
+            originalGunRotation = gun.transform.localRotation;
+        }
     }
 
     void Update()
     {
-        if (isDead)
-        {
-            // Set the position to ensure it is correct
-            Vector3 currentPosition = agent.transform.position;
-            Vector3 newPosition = new Vector3(currentPosition.x, -0.9f, currentPosition.z);
-
-            // Set the position
-            agent.transform.position = newPosition;
-        }
+        if (isDead) { return; } // if dead, do nothing
 
         if (!isHit) // Prevent other actions while hit animation is playing
         {
@@ -94,19 +99,21 @@ public class Enemy : MonoBehaviour
     {
         if (player != null)
         {
-            if (Vector3.Distance(transform.position, player.transform.position) < sightDistance)
+            float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+            if (distanceToPlayer <= sightDistance)
             {
                 Vector3 targetDirection = player.transform.position - transform.position - (Vector3.up * eyeHeight);
                 float angleToPlayer = Vector3.Angle(targetDirection, transform.forward);
-                if (angleToPlayer >= -fieldOfView && angleToPlayer <= fieldOfView)
+
+                if (angleToPlayer <= fieldOfView / 2)
                 {
-                    Ray ray = new Ray(transform.position + (Vector3.up * eyeHeight), targetDirection);
+                    Ray ray = new Ray(transform.position + (Vector3.up * eyeHeight), targetDirection.normalized);
                     RaycastHit hitInfo;
+
                     if (Physics.Raycast(ray, out hitInfo, sightDistance))
                     {
-                        if (hitInfo.transform.gameObject == player)
+                        if (hitInfo.transform.gameObject.CompareTag("Player"))
                         {
-                            Debug.DrawRay(ray.origin, ray.direction * sightDistance);
                             return true;
                         }
                     }
@@ -155,6 +162,12 @@ public class Enemy : MonoBehaviour
             {
                 agent.isStopped = true;
             }
+
+            if (gun != null)
+            {
+                gun.transform.localPosition = attackGunPosition;
+                gun.transform.localRotation = attackGunRotation;
+            }
         }
     }
 
@@ -171,6 +184,12 @@ public class Enemy : MonoBehaviour
             if (agent != null)
             {
                 agent.isStopped = false;
+            }
+
+            if (gun != null)
+            {
+                gun.transform.localPosition = originalGunPosition;
+                gun.transform.localRotation = originalGunRotation;
             }
         }
     }
@@ -285,7 +304,15 @@ public class Enemy : MonoBehaviour
 
     public void Die()
     {
-        if (isDead) return; // Prevent multiple death triggers
+        if (isDead)
+        {
+            // Set the position to ensure it is correct
+            Vector3 currentPosition = agent.transform.position;
+            Vector3 newPosition = new Vector3(currentPosition.x, -0.9f, currentPosition.z);
+
+            // Set the position
+            agent.transform.position = newPosition;
+        }
 
         isDead = true;
         Debug.Log("Enemy Died!");
