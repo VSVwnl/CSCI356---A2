@@ -40,7 +40,7 @@ public class EscManager : MonoBehaviour
 
     public void OpenSettings()
     {
-        SceneManager.LoadScene("Settings");
+        SceneManager.LoadScene("PauseMenu");
     }
 
     public void ReturnToMainMenu()
