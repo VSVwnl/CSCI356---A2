@@ -11,6 +11,7 @@ public class EnemyHealth : MonoBehaviour
     public Image backHealthBar;
     public TextMeshProUGUI EnemyHealthText;
     public Animator animator; // Reference to the Animator
+    public GameObject gun;
 
     private bool isDead = false;
 
@@ -67,23 +68,25 @@ public class EnemyHealth : MonoBehaviour
 
         if (animator != null)
         {
-            animator.SetTrigger("Death");
+            animator.SetBool("isDead", true); // Use the bool parameter instead of trigger
         }
 
-        // Deactivate the enemy after the death animation finishes
-        StartCoroutine(DeactivateAfterAnimation());
+        if (gun != null)
+        {
+            Destroy(gun);
+        }
+
+        // Start coroutine to deactivate after 3 minutes
+        StartCoroutine(DeactivateAfterDelay());
     }
 
-    // Coroutine to deactivate the enemy after the death animation
-    IEnumerator DeactivateAfterAnimation()
+    // Coroutine to deactivate the enemy after 3 minutes
+    IEnumerator DeactivateAfterDelay()
     {
-        // Get the current animation state information
-        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        // Wait for 3 minutes (180 seconds)
+        yield return new WaitForSeconds(180f);
 
-        // Wait until the death animation finishes
-        yield return new WaitForSeconds(stateInfo.length);
-
-        // Deactivate the GameObject after the animation finishes
+        // Deactivate the GameObject
         gameObject.SetActive(false);
     }
 }

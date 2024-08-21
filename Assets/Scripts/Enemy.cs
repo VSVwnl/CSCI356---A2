@@ -4,7 +4,13 @@ using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
-    private StateMachine stateMachine;
+    private enum EnemyState
+    {
+        Patrol,
+        Attack
+    }
+
+    private EnemyState currentState;
     private NavMeshAgent agent;
     private GameObject player;
     public Animator animator;
@@ -19,55 +25,68 @@ public class Enemy : MonoBehaviour
     [Header("Weapon Values")]
     public Transform gunBarrel;
     [Range(0.1f, 10f)]
-    public float fireRate;
+    public float fireRate; // Rate of fire in bullets per second
+
+    [Header("Health Values")]
+    private EnemyHealth enemyHealth;
 
     [SerializeField]
-    private string currentState;
+    private string stateDescription;
 
     [Header("UI")]
-    public GameObject enemyUIPrefab;
+    public GameObject enemyUIPrefab; // Reference to the EnemyUI prefab
 
     private bool isAttacking = false;
     public bool isHit = false;
-    public bool isDead = false; // New flag for death state
+    public bool isDead = false;
+    private float nextFireTime = 0f; // Time when the enemy can fire next
 
-    // Start is called before the first frame update
     void Awake()
     {
-        stateMachine = GetComponent<StateMachine>();
         agent = GetComponent<NavMeshAgent>();
-        stateMachine.Initialise();
         player = GameObject.FindGameObjectWithTag("Player");
+        enemyHealth = GetComponent<EnemyHealth>();
+        currentState = EnemyState.Patrol;
 
+        // Instantiate and set up the enemy UI
         if (enemyUIPrefab != null)
         {
             PositionUIAboveEnemy();
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (!isHit && !isDead) // Prevent other actions while hit or death animation is playing
+        if (isDead)
         {
-            bool playerInSight = CanSeePlayer();
+            // Set the position to ensure it is correct
+            Vector3 currentPosition = agent.transform.position;
+            Vector3 newPosition = new Vector3(currentPosition.x, -0.9f, currentPosition.z);
 
-            if (playerInSight)
+            // Set the position
+            agent.transform.position = newPosition;
+        }
+
+        if (!isHit) // Prevent other actions while hit animation is playing
+        {
+            switch (currentState)
             {
-                StartAttack();
-            }
-            else
-            {
-                StopAttack();
+                case EnemyState.Patrol:
+                    Patrol();
+                    break;
+                case EnemyState.Attack:
+                    Attack();
+                    break;
             }
 
-            currentState = stateMachine.activeState.ToString();
+            stateDescription = currentState.ToString();
+        }
 
-            if (enemyUIPrefab != null)
-            {
-                PositionUIAboveEnemy();
-                FaceCamera();
-            }
+        // Keep the UI always facing the camera
+        if (enemyUIPrefab != null)
+        {
+            PositionUIAboveEnemy();
+            FaceCamera();
         }
     }
 
@@ -75,30 +94,19 @@ public class Enemy : MonoBehaviour
     {
         if (player != null)
         {
-            // Calculate the distance between the enemy and the player using Vector3.Distance
-            float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
-
-            // Check if the player is within sight distance
-            if (distanceToPlayer < sightDistance)
+            if (Vector3.Distance(transform.position, player.transform.position) < sightDistance)
             {
-                // Calculate the direction to the player
-                Vector3 targetDirection = (player.transform.position - transform.position).normalized;
-
-                // Get the angle between the forward direction of the enemy and the direction to the player
+                Vector3 targetDirection = player.transform.position - transform.position - (Vector3.up * eyeHeight);
                 float angleToPlayer = Vector3.Angle(targetDirection, transform.forward);
-
-                // Check if the player is within the field of view
-                if (angleToPlayer <= fieldOfView / 2) // Dividing by 2 because it's an angle on either side
+                if (angleToPlayer >= -fieldOfView && angleToPlayer <= fieldOfView)
                 {
-                    // Perform a raycast to check if there are any obstacles between the enemy and the player
                     Ray ray = new Ray(transform.position + (Vector3.up * eyeHeight), targetDirection);
                     RaycastHit hitInfo;
                     if (Physics.Raycast(ray, out hitInfo, sightDistance))
                     {
-                        // If the ray hits the player, return true
                         if (hitInfo.transform.gameObject == player)
                         {
-                            Debug.DrawRay(ray.origin, ray.direction * sightDistance, Color.green); // Debug the ray
+                            Debug.DrawRay(ray.origin, ray.direction * sightDistance);
                             return true;
                         }
                     }
@@ -107,11 +115,13 @@ public class Enemy : MonoBehaviour
         }
         return false;
     }
+
     private void PositionUIAboveEnemy()
     {
         if (enemyUIPrefab != null)
         {
-            Vector3 offset = new Vector3(0, 2.5f, 0);
+            // Adjust this value to position the UI above the enemy
+            Vector3 offset = new Vector3(0, 2.5f, 0); // Example offset
             enemyUIPrefab.transform.localPosition = offset;
         }
     }
@@ -120,10 +130,12 @@ public class Enemy : MonoBehaviour
     {
         if (enemyUIPrefab != null)
         {
+            // Make the UI always face the camera
             Camera mainCamera = Camera.main;
             if (mainCamera != null)
             {
                 enemyUIPrefab.transform.LookAt(mainCamera.transform);
+                // Ensure UI is not flipped when facing away from the camera
                 enemyUIPrefab.transform.Rotate(Vector3.up * 180f);
             }
         }
@@ -138,6 +150,11 @@ public class Enemy : MonoBehaviour
             {
                 animator.SetBool("isAttacking", true);
             }
+
+            if (agent != null)
+            {
+                agent.isStopped = true;
+            }
         }
     }
 
@@ -150,16 +167,22 @@ public class Enemy : MonoBehaviour
             {
                 animator.SetBool("isAttacking", false);
             }
+
+            if (agent != null)
+            {
+                agent.isStopped = false;
+            }
         }
     }
 
     public void TakeDamage(int damage)
     {
-        if (isDead) return; // Prevent damage processing if already dead
+        if (isDead) return; // If the enemy is dead, do nothing
 
         if (!isHit)
         {
             isHit = true;
+            Debug.Log("Taking damage, setting isHit to true");
             animator.SetBool("isHit", true);
 
             if (isAttacking)
@@ -168,74 +191,130 @@ public class Enemy : MonoBehaviour
                 isAttacking = false;
             }
 
-            // Stop the NavMeshAgent to prevent movement when hit
+            // Stop the NavMeshAgent to prevent movement
             if (agent != null)
             {
-                agent.isStopped = true;
+                agent.isStopped = true; // Stop the agent when hit
             }
 
-            Shootable shootable = GetComponent<Shootable>();
-            if (shootable != null)
+            // Apply damage to the enemy's health
+            if (enemyHealth != null)
             {
-                shootable.ApplyDamage(damage);
+                enemyHealth.TakeDamage(damage);
+                Debug.Log("Enemy Health: " + enemyHealth.health); // Log the current health
 
-                if (shootable.GetHealth() <= 0)
+                // Check if the enemy is dead
+                if (enemyHealth.health <= 0 && !isDead)
                 {
-                    Die(); // Trigger death
-                    return; // Prevent further damage processing
+                    Die();
+                }
+                else
+                {
+                    StartCoroutine(ResetHitState()); // Reset hit state if not dead
                 }
             }
-
-            StartCoroutine(ResetHitState());
         }
-    }
-
-    public void Die()
-    {
-        if (isDead) return; // Prevent multiple calls to Die
-
-        isDead = true; // Set death flag
-        animator.SetTrigger("Die"); // Trigger death animation
-
-        // Disable enemy functionality (stop movement, etc.)
-        if (agent != null)
-        {
-            agent.isStopped = true;
-            agent.enabled = false;
-        }
-
-        // Optionally, disable or remove other components related to AI behavior
-        if (stateMachine != null)
-        {
-            stateMachine.enabled = false;
-        }
-
-        StartCoroutine(WaitForDeathAnimation());
-    }
-
-    private IEnumerator WaitForDeathAnimation()
-    {
-        // Wait for death animation to finish
-        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
-
-        // Destroy the enemy after the animation finishes
-        Destroy(gameObject);
     }
 
     private IEnumerator ResetHitState()
     {
-        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
-        isHit = false;
+        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length); // Wait for hit animation to complete
+        isHit = false;  // Reset isHit flag
         animator.SetBool("isHit", false);
 
-        if (agent != null)
+        // Resume movement after the hit animation
+        if (!isDead && agent != null)
         {
-            agent.isStopped = false; // Resume movement
+            agent.isStopped = false; // Resume the agent's movement
         }
 
-        if (CanSeePlayer() && !isDead)
+        // Resume attack if the player is still in sight
+        if (!isDead && CanSeePlayer())
         {
             StartAttack();
         }
+    }
+
+    private void Patrol()
+    {
+        if (agent.remainingDistance < 0.2f)
+        {
+            // Move to the next waypoint
+            int wayPointIndex = Random.Range(0, path.waypoints.Count); // Example logic to select a waypoint
+            agent.SetDestination(path.waypoints[wayPointIndex].position);
+        }
+
+        if (CanSeePlayer())
+        {
+            currentState = EnemyState.Attack;
+        }
+    }
+
+    private void Attack()
+    {
+        if (CanSeePlayer()) // Check if the enemy can see the player
+        {
+            if (!isAttacking)
+            {
+                StartAttack();
+            }
+
+            // Shoot if the fire rate timer allows
+            if (Time.time >= nextFireTime)
+            {
+                Shoot();
+                nextFireTime = Time.time + 1f / fireRate; // Set the time for the next allowed shot
+            }
+        }
+        else
+        {
+            StopAttack();
+            currentState = EnemyState.Patrol;
+        }
+    }
+
+    private void Shoot()
+    {
+        Transform gunbarrel = gunBarrel;
+        GameObject bullet = Instantiate(Resources.Load("Bullet") as GameObject, gunbarrel.position, gunbarrel.rotation);
+        Vector3 shootDirection = (player.transform.position - gunbarrel.position).normalized;
+        bullet.GetComponent<Rigidbody>().velocity = shootDirection * 40;
+
+        Debug.Log("Shoot");
+    }
+
+    public void Die()
+    {
+        if (isDead) return; // Prevent multiple death triggers
+
+        isDead = true;
+        Debug.Log("Enemy Died!");
+
+        if (animator != null)
+        {
+            animator.SetBool("isDead", true); // Set the isDead boolean to true
+        }
+
+        // Stop the NavMeshAgent to prevent further movement
+        if (agent != null)
+        {
+            agent.isStopped = true;
+        }
+    }
+
+
+    // Draw Gizmos to visualize the enemy's sight distance and field of view
+    private void OnDrawGizmos()
+    {
+        // Draw the sight range
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, sightDistance);
+
+        // Draw the field of view as lines
+        Gizmos.color = Color.red;
+        Vector3 rightBoundary = Quaternion.Euler(0, fieldOfView, 0) * transform.forward * sightDistance;
+        Vector3 leftBoundary = Quaternion.Euler(0, -fieldOfView, 0) * transform.forward * sightDistance;
+        Gizmos.DrawLine(transform.position + Vector3.up * eyeHeight, transform.position + rightBoundary + Vector3.up * eyeHeight);
+        Gizmos.DrawLine(transform.position + Vector3.up * eyeHeight, transform.position + leftBoundary + Vector3.up * eyeHeight);
     }
 }
