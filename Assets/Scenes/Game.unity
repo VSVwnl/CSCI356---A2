@@ -4092,7 +4092,7 @@ MonoBehaviour:
   path: {fileID: 9167226662186620205}
   sightDistance: 10
   fieldOfView: 20
-  eyeHeight: 1
+  eyeHeight: 1.9
   gunBarrel: {fileID: 6328216087400203638}
   gun: {fileID: 814471923}
   fireRate: 1
@@ -13544,6 +13544,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2347670953549044008, guid: 4b1d318961836cc419580977a3baaffb,
+        type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2617437646911888609, guid: 4b1d318961836cc419580977a3baaffb,
         type: 3}
       propertyPath: m_Height
@@ -19660,7 +19665,7 @@ PrefabInstance:
     - target: {fileID: 2748913124992463393, guid: 19eadcf8fbed56b4da77ca94c1b4145f,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2748913124992463393, guid: 19eadcf8fbed56b4da77ca94c1b4145f,
         type: 3}
@@ -20080,7 +20085,7 @@ PrefabInstance:
     - target: {fileID: 8479647377699197980, guid: 19eadcf8fbed56b4da77ca94c1b4145f,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.5
+      value: 1.9
       objectReference: {fileID: 0}
     - target: {fileID: 8588272146379462971, guid: 19eadcf8fbed56b4da77ca94c1b4145f,
         type: 3}

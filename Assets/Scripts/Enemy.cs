@@ -45,9 +45,7 @@ public class Enemy : MonoBehaviour
 
     private Vector3 originalGunPosition;
     private Quaternion originalGunRotation;
-    public Vector3 attackGunPosition = new Vector3(-0.11f, 1.65f, 0.25f);
-    public Quaternion attackGunRotation = Quaternion.Euler(16.754f, -226.9f, 20.652f);
-
+   
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -173,8 +171,9 @@ public class Enemy : MonoBehaviour
 
             if (gun != null)
             {
-                gun.transform.localPosition = attackGunPosition;
-                gun.transform.localRotation = attackGunRotation;
+                gun.transform.localPosition =  new Vector3(0.151f, 1.65f, 0.412f);
+                gun.transform.localRotation =  Quaternion.Euler(15.733f, -176.335f, 0.787f);
+                Debug.Log($"Gun Position: {gun.transform.localPosition}, Rotation: {gun.transform.localRotation}");
             }
         }
     }
