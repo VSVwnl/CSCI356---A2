@@ -1,0 +1,325 @@
+using System.Collections;
+using UnityEngine;
+using UnityEngine.AI;
+
+public class MeleeEnemy : MonoBehaviour
+{
+    private enum EnemyState
+    {
+        Patrol,
+        Attack
+    }
+
+    private EnemyState currentState;
+    private NavMeshAgent agent;
+    private GameObject player;
+    public Animator animator;
+    public NavMeshAgent Agent { get => agent; }
+    public GameObject Player { get => player; }
+
+    public Path path;
+    [Header("Sight Values")]
+    public float sightDistance = 15f;
+    public float fieldOfView = 40f;
+    public float eyeHeight;
+    [Header("Melee Values")]
+    public int attackRange = 2;
+    public int meleeDamage = 10; // Damage dealt per attack
+
+    [Header("Health Values")]
+    private EnemyHealth enemyHealth;
+
+    [SerializeField]
+    private string stateDescription;
+
+    [Header("UI")]
+    public GameObject enemyUIPrefab; // Reference to the EnemyUI prefab
+
+    private bool isAttacking = false;
+    public bool isHit = false;
+    public bool isDead = false;
+
+    void Awake()
+    {
+        agent = GetComponent<NavMeshAgent>();
+        player = GameObject.FindGameObjectWithTag("Player");
+        enemyHealth = GetComponent<EnemyHealth>();
+        currentState = EnemyState.Patrol;
+
+        // Instantiate and set up the enemy UI
+        if (enemyUIPrefab != null)
+        {
+            PositionUIAboveEnemy();
+        }
+    }
+
+    void Update()
+    {
+        if (isDead)
+        {
+            // Set the position to ensure it is correct
+            Vector3 currentPosition = agent.transform.position;
+            Vector3 newPosition = new Vector3(currentPosition.x, currentPosition.y - 0.5f, currentPosition.z);
+
+            // Set the position
+            agent.transform.position = newPosition;
+        }
+
+        if (!isHit) // Prevent other actions while hit animation is playing
+        {
+            switch (currentState)
+            {
+                case EnemyState.Patrol:
+                    Patrol();
+                    break;
+                case EnemyState.Attack:
+                    Attack();
+                    break;
+            }
+
+            stateDescription = currentState.ToString();
+        }
+
+        // Keep the UI always facing the camera
+        if (enemyUIPrefab != null)
+        {
+            PositionUIAboveEnemy();
+            FaceCamera();
+        }
+    }
+
+    public bool CanSeePlayer()
+    {
+        if (player != null)
+        {
+            float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+            if (distanceToPlayer <= sightDistance)
+            {
+                Vector3 targetDirection = player.transform.position - transform.position;
+                targetDirection.y += eyeHeight; // Adjust for height
+
+                float angleToPlayer = Vector3.Angle(targetDirection, transform.forward);
+
+                if (angleToPlayer <= fieldOfView / 2)
+                {
+                    Ray ray = new Ray(transform.position + (Vector3.up * eyeHeight), targetDirection);
+                    RaycastHit hitInfo;
+
+                    if (Physics.Raycast(ray, out hitInfo, sightDistance))
+                    {
+                        if (hitInfo.transform.gameObject.CompareTag("Player"))
+                        {
+                            Debug.Log("Player detected within sight range and field of view.");
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private void PositionUIAboveEnemy()
+    {
+        if (enemyUIPrefab != null)
+        {
+            // Adjust this value to position the UI above the enemy
+            Vector3 offset = new Vector3(0, 2.5f, 0); // Example offset
+            enemyUIPrefab.transform.localPosition = offset;
+        }
+    }
+
+    private void FaceCamera()
+    {
+        if (enemyUIPrefab != null)
+        {
+            // Make the UI always face the camera
+            Camera mainCamera = Camera.main;
+            if (mainCamera != null)
+            {
+                enemyUIPrefab.transform.LookAt(mainCamera.transform);
+                // Ensure UI is not flipped when facing away from the camera
+                enemyUIPrefab.transform.Rotate(Vector3.up * 180f);
+            }
+        }
+    }
+
+    private void StartAttack()
+    {
+        if (!isAttacking)
+        {
+            isAttacking = true;
+            if (animator != null)
+            {
+                animator.SetBool("isAttacking", true);
+            }
+
+            if (agent != null)
+            {
+                agent.isStopped = true;
+            }
+        }
+    }
+
+    private void StopAttack()
+    {
+        if (isAttacking)
+        {
+            isAttacking = false;
+            if (animator != null)
+            {
+                animator.SetBool("isAttacking", false);
+            }
+
+            if (agent != null)
+            {
+                agent.isStopped = false;
+            }
+        }
+    }
+
+    public void TakeDamage(int damage)
+    {
+        if (isDead) return; // If the enemy is dead, do nothing
+
+        if (!isHit)
+        {
+            isHit = true;
+            Debug.Log("Taking damage, setting isHit to true");
+            animator.SetBool("isHit", true);
+
+            if (isAttacking)
+            {
+                animator.SetBool("isAttacking", false);
+                isAttacking = false;
+            }
+
+            // Stop the NavMeshAgent to prevent movement
+            if (agent != null)
+            {
+                agent.isStopped = true; // Stop the agent when hit
+            }
+
+            // Apply damage to the enemy's health
+            if (enemyHealth != null)
+            {
+                enemyHealth.TakeDamage(damage);
+                Debug.Log("Enemy Health: " + enemyHealth.health); // Log the current health
+
+                // Check if the enemy is dead
+                if (enemyHealth.health <= 0 && !isDead)
+                {
+                    Die();
+                }
+                else
+                {
+                    StartCoroutine(ResetHitState()); // Reset hit state if not dead
+                }
+            }
+        }
+    }
+
+    private IEnumerator ResetHitState()
+    {
+        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length); // Wait for hit animation to complete
+        isHit = false;  // Reset isHit flag
+        animator.SetBool("isHit", false);
+
+        // Resume movement after the hit animation
+        if (!isDead && agent != null)
+        {
+            agent.isStopped = false; // Resume the agent's movement
+        }
+
+        // Resume attack if the player is still in sight
+        if (!isDead && CanSeePlayer())
+        {
+            StartAttack();
+        }
+    }
+
+    private void Patrol()
+    {
+        if (agent.remainingDistance < 0.2f)
+        {
+            // Move to the next waypoint
+            int wayPointIndex = Random.Range(0, path.waypoints.Count); 
+            agent.SetDestination(path.waypoints[wayPointIndex].position);
+        }
+
+        if (CanSeePlayer())
+        {
+            currentState = EnemyState.Attack;
+        }
+    }
+
+    private void Attack()
+    {
+        if (CanSeePlayer()) // Check if the enemy can see the player
+        {
+            float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+
+            if (distanceToPlayer <= attackRange)
+            {
+                if (!isAttacking)
+                {
+                    StartAttack();
+                    PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
+                    if (playerHealth != null)
+                    {
+                        playerHealth.TakeDamage(meleeDamage);
+                    }
+                }
+            }
+            else
+            {
+                // If the player is outside the attack range, move towards the player
+                if (agent != null)
+                {
+                    agent.SetDestination(player.transform.position);
+                }
+            }
+        }
+        else
+        {
+            StopAttack();
+            currentState = EnemyState.Patrol;
+        }
+    }
+
+
+
+    public void Die()
+    {
+        if (isDead) { return; }
+
+        isDead = true;
+        Debug.Log("Enemy Died!");
+
+        if (animator != null)
+        {
+            animator.SetBool("isDead", true); // Set the isDead boolean to true
+        }
+
+        // Stop the NavMeshAgent to prevent further movement
+        if (agent != null)
+        {
+            agent.isStopped = true;
+        }
+    }
+
+    // Draw Gizmos to visualize the enemy's sight distance and field of view
+    private void OnDrawGizmos()
+    {
+        // Draw the sight range
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, sightDistance);
+
+        // Draw the field of view as lines
+        Gizmos.color = Color.red;
+        Vector3 rightBoundary = Quaternion.Euler(0, fieldOfView, 0) * transform.forward * sightDistance;
+        Vector3 leftBoundary = Quaternion.Euler(0, -fieldOfView, 0) * transform.forward * sightDistance;
+        Gizmos.DrawLine(transform.position + Vector3.up * eyeHeight, transform.position + rightBoundary + Vector3.up * eyeHeight);
+        Gizmos.DrawLine(transform.position + Vector3.up * eyeHeight, transform.position + leftBoundary + Vector3.up * eyeHeight);
+    }
+}

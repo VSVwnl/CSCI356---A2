@@ -66,9 +66,9 @@ public class EnemyHealth : MonoBehaviour
         isDead = true;
         Debug.Log("Enemy Died!");
 
-        if (animator != null)
+         if (animator != null)
         {
-            animator.SetBool("isDead", true); // Use the bool parameter instead of trigger
+            animator.SetBool("isDead", true); // Set the isDead boolean to true
         }
 
         if (gun != null)
@@ -84,7 +84,7 @@ public class EnemyHealth : MonoBehaviour
     IEnumerator DeactivateAfterDelay()
     {
         // Wait for 3 minutes (180 seconds)
-        yield return new WaitForSeconds(180f);
+        yield return new WaitForSeconds(10f);
 
         // Deactivate the GameObject
         gameObject.SetActive(false);

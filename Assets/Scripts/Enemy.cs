@@ -70,7 +70,15 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        if (isDead) { return; } // if dead, do nothing
+        if (isDead)
+        {
+            // Set the position to ensure it is correct
+            Vector3 currentPosition = agent.transform.position;
+            Vector3 newPosition = new Vector3(currentPosition.x, currentPosition.y - 0.99f, currentPosition.z);
+
+            // Set the position
+            agent.transform.position = newPosition;
+        }
 
         if (!isHit) // Prevent other actions while hit animation is playing
         {
@@ -304,15 +312,7 @@ public class Enemy : MonoBehaviour
 
     public void Die()
     {
-        if (isDead)
-        {
-            // Set the position to ensure it is correct
-            Vector3 currentPosition = agent.transform.position;
-            Vector3 newPosition = new Vector3(currentPosition.x, -0.9f, currentPosition.z);
-
-            // Set the position
-            agent.transform.position = newPosition;
-        }
+        if (isDead) { return; }
 
         isDead = true;
         Debug.Log("Enemy Died!");
