@@ -1,7 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Shooter : MonoBehaviour
 {
@@ -19,6 +18,7 @@ public class Shooter : MonoBehaviour
     public int weaponType = 1;         // Set weapon to 1.
     public GameObject[] hiddenObjects; // Array of hidden objects to activate based on weapon chosen
 
+    private TalismanHighlight lastHighlightedTalisman; // Reference to the last highlighted talisman
 
     // Start is called before the first frame update
     void Start()
@@ -26,7 +26,7 @@ public class Shooter : MonoBehaviour
         // gets the GameObject's camera component
         cam = GetComponentInChildren<Camera>();
 
-        // hide the mouse cursor at the centre of screen
+        // hide the mouse cursor at the centre of the screen
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
@@ -46,6 +46,7 @@ public class Shooter : MonoBehaviour
 
         changeWeapon(weaponType);
     }
+
     public void changeWeapon(int weapon)
     {
         if (weapon >= 1 && weapon <= hiddenObjects.Length)
@@ -75,239 +76,141 @@ public class Shooter : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Weapon switching logic
         if (Input.GetKeyDown(KeyCode.F))
         {
             CycleWeapons();
         }
 
-        // for handgun
-        if (weaponType == 1)
+        // Raycasting for charm highlighting (regardless of weapon type)
+        Vector3 point = new Vector3(cam.pixelWidth / 2, cam.pixelHeight / 2, 0);
+        Ray ray = cam.ScreenPointToRay(point);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit))
         {
-            // on left mouse button click
-            if (Input.GetMouseButtonDown(0))
+            TalismanHighlight talisman = hit.transform.GetComponent<TalismanHighlight>();
+
+            if (talisman != null)
             {
-                // get point in the middle of the screen
-                Vector3 point = new Vector3(cam.pixelWidth / 2, cam.pixelHeight / 2, 0);
-                
-                // Apply random offset to the point
-                point.x += Random.Range(-5f, 5f);
-                point.y += Random.Range(-5f, 5f);
-
-                // create a ray from the point in the direction of the camera
-                Ray ray = cam.ScreenPointToRay(point);
-
-                RaycastHit hit; // stores ray intersection information
-
-                // ray cast will obtain hit information if it intersects anything
-                if (Physics.Raycast(ray, out hit))
-                {
-                    // get the GameObject that was hit
-                    GameObject hitObject = hit.transform.gameObject;
-
-                    // get Shootable component
-                    Shootable target = hitObject.GetComponent<Shootable>();
-
-                    // if the object has a Shootable component
-                    if (target != null)
-                    {
-                        // calculate impulse
-                        Vector3 impulse = Vector3.Normalize(hit.point - transform.position) * impulseStrength;
-
-                        // add the impulse to the rigidbody 
-                        hit.rigidbody.AddForceAtPosition(impulse, hit.point, ForceMode.Impulse);
-
-                        // reduce health of the Shootable object
-                        target.ApplyDamage(5);
-
-                        // start coroutine to generate a bullet 
-                        StartCoroutine(GenerateBullet(hit, point));
-                    }
-
-                }
+                talisman.Highlight(true);
+                lastHighlightedTalisman = talisman;
+            }
+            else if (lastHighlightedTalisman != null)
+            {
+                lastHighlightedTalisman.Highlight(false);
+                lastHighlightedTalisman = null;
             }
         }
-        // for machine gun
+
+        // Weapon logic for handgun
+        if (weaponType == 1 && Input.GetMouseButtonDown(0))
+        {
+            HandleHandgunFire(ray);
+        }
+        // Weapon logic for machine gun
         else if (weaponType == 2)
         {
-            // on left mouse button down
-            if (Input.GetMouseButtonDown(0))
-            {
-                isShooting = true; // Start continuous fire
-            }
+            if (Input.GetMouseButtonDown(0)) isShooting = true;
+            if (Input.GetMouseButtonUp(0)) isShooting = false;
 
-            // on left mouse button up
-            if (Input.GetMouseButtonUp(0))
-            {
-                isShooting = false; // Stop continuous fire
-            }
-
-            // Continuous fire with delay executes if:
-            // 1. isShooting is true
-            // 2. a certain time has passed since the last shot (controlled by fireDelay).
             if (isShooting && Time.time - lastFireTime >= fireDelay)
             {
-                // get point in the middle of the screen
-                Vector3 point = new Vector3(cam.pixelWidth / 2, cam.pixelHeight / 2, 0);
-
-                // Apply random offset to the point
-                point.x += Random.Range(-5f, 5f);
-                point.y += Random.Range(-5f, 5f);
-
-                // a ray is created from the center of the screen to determine where the player is aiming
-                Ray ray = cam.ScreenPointToRay(point);
-
-                // stores ray intersection information
-                RaycastHit hit;
-
-                // the ray is cast
-                // if it hits an object with a Shootable component, it applies an impulse force to the object, reduces its health, and generates a particle effect
-                if (Physics.Raycast(ray, out hit))
-                {
-                    // get the GameObject that was hit
-                    GameObject hitObject = hit.transform.gameObject;
-
-                    // get Shootable component
-                    Shootable target = hitObject.GetComponent<Shootable>();
-
-                    // if the object has a Shootable component
-                    if (target != null)
-                    {
-                        // calculate impulse
-                        Vector3 impulse = Vector3.Normalize(hit.point - transform.position)
-                            * impulseStrength;
-
-                        // add the impulse to the rigidbody 
-                        hit.rigidbody.AddForceAtPosition(impulse, hit.point, ForceMode.Impulse);
-
-                        // reduce health of the Shootable object
-                        target.ApplyDamage(10); 
-
-                        // start coroutine to generate a particle system 
-                        StartCoroutine(GeneratePS(hit));
-
-                        // start coroutine to generate a bullet 
-                        StartCoroutine(GenerateBullet(hit, point));
-                    }
-                }
-                // Update the time of the last shot
+                HandleMachineGunFire(ray);
                 lastFireTime = Time.time;
             }
         }
-        // for shotgun
-        else if (weaponType == 3)
+        // Weapon logic for shotgun
+        else if (weaponType == 3 && Input.GetMouseButtonDown(0))
         {
-            // on left mouse button click
-            if (Input.GetMouseButtonDown(0))
+            HandleShotgunFire(ray);
+        }
+    }
+
+    void HandleHandgunFire(Ray ray)
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
+        {
+            Shootable target = hit.transform.GetComponent<Shootable>();
+
+            if (target != null)
             {
-                // get point in the middle of the screen
-                Vector3 point = new Vector3(cam.pixelWidth / 2, cam.pixelHeight / 2, 0);
-
-                // Apply random offset to the point
-                point.x += Random.Range(-5f, 5f);
-                point.y += Random.Range(-5f, 5f);
-
-                // create a ray from the point in the direction of the camera
-                Ray ray = cam.ScreenPointToRay(point);
-
-                RaycastHit hit; // stores ray intersection information
-
-                // ray cast will obtain hit information if it intersects anything
-                if (Physics.Raycast(ray, out hit))
-                {
-                    // get the GameObject that was hit
-                    GameObject hitObject = hit.transform.gameObject;
-
-                    // get Shootable component
-                    Shootable target = hitObject.GetComponent<Shootable>();
-
-                    // if the object has a Shootable component
-                    if (target != null)
-                    {
-                        // calculate impulse
-                        Vector3 impulse = Vector3.Normalize(hit.point - transform.position) * impulseStrength;
-
-                        // add the impulse to the rigidbody 
-                        hit.rigidbody.AddForceAtPosition(impulse, hit.point, ForceMode.Impulse);
-
-                        // reduce health of the Shootable object
-                        target.ApplyDamage(15); 
-
-                        // start coroutine to generate a particle system 
-                        StartCoroutine(GenerateAlotBullet(hit, point));
-                    }
-
-                }
+                Vector3 impulse = Vector3.Normalize(hit.point - transform.position) * impulseStrength;
+                hit.rigidbody.AddForceAtPosition(impulse, hit.point, ForceMode.Impulse);
+                target.ApplyDamage(5);
+                StartCoroutine(GenerateBullet(hit, ray.origin));
             }
         }
     }
 
+    void HandleMachineGunFire(Ray ray)
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
+        {
+            Shootable target = hit.transform.GetComponent<Shootable>();
+
+            if (target != null)
+            {
+                Vector3 impulse = Vector3.Normalize(hit.point - transform.position) * impulseStrength;
+                hit.rigidbody.AddForceAtPosition(impulse, hit.point, ForceMode.Impulse);
+                target.ApplyDamage(10);
+                StartCoroutine(GeneratePS(hit));
+                StartCoroutine(GenerateBullet(hit, ray.origin));
+            }
+        }
+    }
+
+    void HandleShotgunFire(Ray ray)
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
+        {
+            Shootable target = hit.transform.GetComponent<Shootable>();
+
+            if (target != null)
+            {
+                Vector3 impulse = Vector3.Normalize(hit.point - transform.position) * impulseStrength;
+                hit.rigidbody.AddForceAtPosition(impulse, hit.point, ForceMode.Impulse);
+                target.ApplyDamage(15);
+                StartCoroutine(GenerateAlotBullet(hit, ray.origin));
+            }
+        }
+    }
 
     private IEnumerator GeneratePS(RaycastHit hit)
     {
-        // instantiate particle system prefab
         GameObject ps = Instantiate(particleSysPrefab, hit.point, Quaternion.LookRotation(hit.normal));
-
-        // wait for 1 second
         yield return new WaitForSeconds(1);
-
-        // remove the particle system
         Destroy(ps);
     }
 
     private IEnumerator GenerateBullet(RaycastHit hit, Vector3 point)
     {
-        // instantiate bullet object prefab
         GameObject bullet = Instantiate(bulletPrefab);
         bullet.transform.position = cam.transform.position + cam.transform.forward * 2;
-
-        // get the object's rigidbody component
         Rigidbody target = bullet.GetComponent<Rigidbody>();
-
-        // calculate impulse strength
         Vector3 impulse = cam.transform.forward * bulletImpulse;
-
-        // apply impulse with a random offset for accuracy
         impulse += Random.Range(-0.1f, 0.1f) * cam.transform.right;
         impulse += Random.Range(-0.1f, 0.1f) * cam.transform.up;
-
-        // apply impulse
         target.AddForceAtPosition(impulse, cam.transform.position, ForceMode.Impulse);
-
-        // wait for 1 second
         yield return new WaitForSeconds(0.5f);
-
-        // remove the bullet
         Destroy(bullet);
     }
 
     private IEnumerator GenerateAlotBullet(RaycastHit hit, Vector3 point)
     {
-        GameObject bullet = Instantiate(bulletPrefab);
-
         for (int i = 0; i < 7; i++)
         {
-            // instantiate bullet object prefab
-            bullet = Instantiate(bulletPrefab);
+            GameObject bullet = Instantiate(bulletPrefab);
             bullet.transform.position = cam.transform.position + cam.transform.forward * 2;
-
-            // get the object's rigidbody component
             Rigidbody target = bullet.GetComponent<Rigidbody>();
-
-            // calculate impulse strength
             Vector3 impulse = cam.transform.forward * bulletImpulse;
-
-            // apply impulse with a random offset for accuracy
             impulse += Random.Range(-0.1f, 0.1f) * cam.transform.right;
             impulse += Random.Range(-0.1f, 0.1f) * cam.transform.up;
-
-            // apply impulse
             target.AddForceAtPosition(impulse, cam.transform.position, ForceMode.Impulse);
+            yield return new WaitForSeconds(0.05f);  // Short delay between bullets
         }
-
-        // wait for a short delay
-        yield return new WaitForSeconds(0.5f);
-
-        // remove the bullet
-        Destroy(bullet);
     }
 }
