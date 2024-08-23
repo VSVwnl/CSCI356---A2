@@ -20,6 +20,7 @@ TagManager:
   - Weapon
   - Ground
   - Enemy
+  - Collectible
   layers:
   - Default
   - TransparentFX
