@@ -60,6 +60,7 @@ public class PlayerHealth : MonoBehaviour
         health -= damage;
         lerpTimer = 0f;
         healthText.text = Mathf.RoundToInt(health) + "/" + Mathf.RoundToInt(maxHealth);
+        Debug.Log("Player took " + damage + " damage.");
     }
 
     /*

@@ -18,13 +18,10 @@ public class MeleeEnemy : MonoBehaviour
     public GameObject Player { get => player; }
 
     public Path path;
-    [Header("Sight Values")]
-    public float sightDistance = 15f;
-    public float fieldOfView = 40f;
-    public float eyeHeight;
     [Header("Melee Values")]
+    public float attackRadius = 3f;
     public int attackRange = 2;
-    public int meleeDamage = 10; // Damage dealt per attack
+    public int meleeDamage = 10;
 
     [Header("Health Values")]
     private EnemyHealth enemyHealth;
@@ -33,11 +30,13 @@ public class MeleeEnemy : MonoBehaviour
     private string stateDescription;
 
     [Header("UI")]
-    public GameObject enemyUIPrefab; // Reference to the EnemyUI prefab
+    public GameObject enemyUIPrefab;
 
     private bool isAttacking = false;
     public bool isHit = false;
     public bool isDead = false;
+
+    private Coroutine attackCoroutine;
 
     void Awake()
     {
@@ -46,7 +45,6 @@ public class MeleeEnemy : MonoBehaviour
         enemyHealth = GetComponent<EnemyHealth>();
         currentState = EnemyState.Patrol;
 
-        // Instantiate and set up the enemy UI
         if (enemyUIPrefab != null)
         {
             PositionUIAboveEnemy();
@@ -57,15 +55,11 @@ public class MeleeEnemy : MonoBehaviour
     {
         if (isDead)
         {
-            // Set the position to ensure it is correct
-            Vector3 currentPosition = agent.transform.position;
-            Vector3 newPosition = new Vector3(currentPosition.x, currentPosition.y - 0.5f, currentPosition.z);
-
-            // Set the position
-            agent.transform.position = newPosition;
+            HandleDeadState();
+            return;
         }
 
-        if (!isHit) // Prevent other actions while hit animation is playing
+        if (!isHit)
         {
             switch (currentState)
             {
@@ -80,7 +74,6 @@ public class MeleeEnemy : MonoBehaviour
             stateDescription = currentState.ToString();
         }
 
-        // Keep the UI always facing the camera
         if (enemyUIPrefab != null)
         {
             PositionUIAboveEnemy();
@@ -88,43 +81,18 @@ public class MeleeEnemy : MonoBehaviour
         }
     }
 
-    public bool CanSeePlayer()
+    private void HandleDeadState()
     {
-        if (player != null)
-        {
-            float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
-            if (distanceToPlayer <= sightDistance)
-            {
-                Vector3 targetDirection = player.transform.position - transform.position;
-                targetDirection.y += eyeHeight; // Adjust for height
-
-                float angleToPlayer = Vector3.Angle(targetDirection, transform.forward);
-
-                if (angleToPlayer <= fieldOfView / 2)
-                {
-                    Ray ray = new Ray(transform.position + (Vector3.up * eyeHeight), targetDirection);
-                    RaycastHit hitInfo;
-
-                    if (Physics.Raycast(ray, out hitInfo, sightDistance))
-                    {
-                        if (hitInfo.transform.gameObject.CompareTag("Player"))
-                        {
-                            Debug.Log("Player detected within sight range and field of view.");
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
+        Vector3 currentPosition = agent.transform.position;
+        Vector3 newPosition = new Vector3(currentPosition.x, currentPosition.y - 0.5f, currentPosition.z);
+        agent.transform.position = newPosition;
     }
 
     private void PositionUIAboveEnemy()
     {
         if (enemyUIPrefab != null)
         {
-            // Adjust this value to position the UI above the enemy
-            Vector3 offset = new Vector3(0, 2.5f, 0); // Example offset
+            Vector3 offset = new Vector3(0, 2.5f, 0);
             enemyUIPrefab.transform.localPosition = offset;
         }
     }
@@ -133,12 +101,10 @@ public class MeleeEnemy : MonoBehaviour
     {
         if (enemyUIPrefab != null)
         {
-            // Make the UI always face the camera
             Camera mainCamera = Camera.main;
             if (mainCamera != null)
             {
                 enemyUIPrefab.transform.LookAt(mainCamera.transform);
-                // Ensure UI is not flipped when facing away from the camera
                 enemyUIPrefab.transform.Rotate(Vector3.up * 180f);
             }
         }
@@ -158,6 +124,44 @@ public class MeleeEnemy : MonoBehaviour
             {
                 agent.isStopped = true;
             }
+
+            if (attackCoroutine != null)
+            {
+                StopCoroutine(attackCoroutine);
+            }
+            attackCoroutine = StartCoroutine(ApplyDamageWhileAttacking());
+        }
+    }
+
+    private IEnumerator ApplyDamageWhileAttacking()
+    {
+        if (animator != null)
+        {
+            float attackAnimationLength = animator.GetCurrentAnimatorStateInfo(0).length;
+            float delay = attackAnimationLength / animator.speed;
+
+            yield return new WaitForSeconds(delay);
+
+            while (isAttacking && IsPlayerWithinAttackRadius())
+            {
+                if (player != null)
+                {
+                    PlayerHealth playerHealth = player.GetComponentInParent<PlayerHealth>();
+                    if (playerHealth != null)
+                    {
+                        playerHealth.TakeDamage(meleeDamage);
+                        Debug.Log("Damage applied to the player.");
+                    }
+                    else
+                    {
+                        Debug.LogWarning("PlayerHealth component not found on the player or its parent.");
+                    }
+                }
+
+                yield return new WaitForSeconds(delay);
+            }
+
+            StopAttack();
         }
     }
 
@@ -180,40 +184,43 @@ public class MeleeEnemy : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if (isDead) return; // If the enemy is dead, do nothing
+        if (isDead) return;
 
         if (!isHit)
         {
             isHit = true;
             Debug.Log("Taking damage, setting isHit to true");
-            animator.SetBool("isHit", true);
 
+            // Set hit animation
+            if (animator != null)
+            {
+                animator.SetBool("isHit", true);
+            }
+
+            // Stop attack if currently attacking
             if (isAttacking)
             {
-                animator.SetBool("isAttacking", false);
-                isAttacking = false;
+                StopAttack();
             }
 
-            // Stop the NavMeshAgent to prevent movement
+            // Stop agent movement
             if (agent != null)
             {
-                agent.isStopped = true; // Stop the agent when hit
+                agent.isStopped = true;
             }
 
-            // Apply damage to the enemy's health
+            // Apply damage to enemy health
             if (enemyHealth != null)
             {
                 enemyHealth.TakeDamage(damage);
-                Debug.Log("Enemy Health: " + enemyHealth.health); // Log the current health
 
-                // Check if the enemy is dead
                 if (enemyHealth.health <= 0 && !isDead)
                 {
                     Die();
                 }
                 else
                 {
-                    StartCoroutine(ResetHitState()); // Reset hit state if not dead
+                    StartCoroutine(ResetHitState());
                 }
             }
         }
@@ -221,18 +228,22 @@ public class MeleeEnemy : MonoBehaviour
 
     private IEnumerator ResetHitState()
     {
-        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length); // Wait for hit animation to complete
-        isHit = false;  // Reset isHit flag
-        animator.SetBool("isHit", false);
+        float hitAnimationLength = animator.GetCurrentAnimatorStateInfo(0).length;
+        yield return new WaitForSeconds(hitAnimationLength);
 
-        // Resume movement after the hit animation
-        if (!isDead && agent != null)
+        isHit = false;
+        Debug.Log("Resetting isHit to false");
+        if (animator != null)
         {
-            agent.isStopped = false; // Resume the agent's movement
+            animator.SetBool("isHit", false);
         }
 
-        // Resume attack if the player is still in sight
-        if (!isDead && CanSeePlayer())
+        if (!isDead && agent != null)
+        {
+            agent.isStopped = false;
+        }
+
+        if (!isDead && IsPlayerWithinAttackRadius())
         {
             StartAttack();
         }
@@ -242,12 +253,11 @@ public class MeleeEnemy : MonoBehaviour
     {
         if (agent.remainingDistance < 0.2f)
         {
-            // Move to the next waypoint
-            int wayPointIndex = Random.Range(0, path.waypoints.Count); 
+            int wayPointIndex = Random.Range(0, path.waypoints.Count);
             agent.SetDestination(path.waypoints[wayPointIndex].position);
         }
 
-        if (CanSeePlayer())
+        if (IsPlayerWithinAttackRadius())
         {
             currentState = EnemyState.Attack;
         }
@@ -255,29 +265,22 @@ public class MeleeEnemy : MonoBehaviour
 
     private void Attack()
     {
-        if (CanSeePlayer()) // Check if the enemy can see the player
-        {
-            float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+        float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
 
-            if (distanceToPlayer <= attackRange)
+        if (distanceToPlayer <= attackRange)
+        {
+            if (!isAttacking)
             {
-                if (!isAttacking)
-                {
-                    StartAttack();
-                    PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
-                    if (playerHealth != null)
-                    {
-                        playerHealth.TakeDamage(meleeDamage);
-                    }
-                }
+                StartAttack();
+            }
+
+            if (distanceToPlayer > attackRange)
+            {
+                agent.SetDestination(player.transform.position);
             }
             else
             {
-                // If the player is outside the attack range, move towards the player
-                if (agent != null)
-                {
-                    agent.SetDestination(player.transform.position);
-                }
+                agent.isStopped = true;
             }
         }
         else
@@ -287,39 +290,35 @@ public class MeleeEnemy : MonoBehaviour
         }
     }
 
+    private bool IsPlayerWithinAttackRadius()
+    {
+        if (player == null) return false;
 
+        float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+        return distanceToPlayer <= attackRadius;
+    }
 
     public void Die()
     {
-        if (isDead) { return; }
+        if (isDead) return;
 
         isDead = true;
         Debug.Log("Enemy Died!");
 
         if (animator != null)
         {
-            animator.SetBool("isDead", true); // Set the isDead boolean to true
+            animator.SetBool("isDead", true);
         }
 
-        // Stop the NavMeshAgent to prevent further movement
         if (agent != null)
         {
             agent.isStopped = true;
         }
     }
 
-    // Draw Gizmos to visualize the enemy's sight distance and field of view
     private void OnDrawGizmos()
     {
-        // Draw the sight range
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, sightDistance);
-
-        // Draw the field of view as lines
         Gizmos.color = Color.red;
-        Vector3 rightBoundary = Quaternion.Euler(0, fieldOfView, 0) * transform.forward * sightDistance;
-        Vector3 leftBoundary = Quaternion.Euler(0, -fieldOfView, 0) * transform.forward * sightDistance;
-        Gizmos.DrawLine(transform.position + Vector3.up * eyeHeight, transform.position + rightBoundary + Vector3.up * eyeHeight);
-        Gizmos.DrawLine(transform.position + Vector3.up * eyeHeight, transform.position + leftBoundary + Vector3.up * eyeHeight);
+        Gizmos.DrawWireSphere(transform.position, attackRadius);
     }
 }

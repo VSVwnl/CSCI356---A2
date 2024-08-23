@@ -5,7 +5,7 @@ public class Shootable : MonoBehaviour
 {
     private EnemyHealth enemyHealth;
     private Enemy enemy;
-    private MeleeEnemy meleeEnemy; // Reference for MeleeEnemy type
+    private MeleeEnemy meleeEnemy;
 
     private void Start()
     {
