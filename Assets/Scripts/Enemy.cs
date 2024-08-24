@@ -47,6 +47,7 @@ public class Enemy : MonoBehaviour
     private Quaternion originalGunRotation;
 
     private int wayPointIndex = 0;
+    public int enemyType = 0;
 
     void Awake()
     {
@@ -176,9 +177,25 @@ public class Enemy : MonoBehaviour
 
             if (gun != null)
             {
-                gun.transform.localPosition =  new Vector3(0.151f, 1.65f, 0.412f);
-                gun.transform.localRotation =  Quaternion.Euler(15.733f, -176.335f, 0.787f);
-                Debug.Log($"Gun Position: {gun.transform.localPosition}, Rotation: {gun.transform.localRotation}");
+                switch (enemyType)
+                {
+                    case 1: // Nightshade type
+                        gun.transform.localPosition = new Vector3(0.151f, 1.686f, 0.402f);
+                        gun.transform.localRotation = Quaternion.Euler(7.086f, -176.454f, 0.763f);
+                        break;
+                    case 2: //Arissa type
+                        gun.transform.localPosition = new Vector3(0.127f, 1.448f, 0.462f);
+                        gun.transform.localRotation = Quaternion.Euler(8.544f, -176.435f, 0.766f);
+                        break;
+                    case 3: //Vampire type
+                        gun.transform.localPosition = new Vector3(0.198f, 1.762f, 0.562f);
+                        gun.transform.localRotation = Quaternion.Euler(11.561f, -196.286f, 1.868f);
+                        break;
+                    default:
+                        gun.transform.localPosition = new Vector3(0.151f, 1.65f, 0.412f);
+                        gun.transform.localRotation = Quaternion.Euler(15.733f, -176.335f, 0.787f);
+                        break;
+                }
             }
         }
     }
