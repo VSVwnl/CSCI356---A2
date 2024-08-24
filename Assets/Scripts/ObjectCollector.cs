@@ -7,11 +7,15 @@ public class ObjectCollector : MonoBehaviour
     public int totalCollected = 0;                // Number of objects collected
     public int requiredCollectibles = 12;          // Required number of collectibles to win
     public Text collectibleCounter;               // Reference to a UI Text element
+    public Text pickUpPrompt;                     // Reference to the UI Text for the "E" prompt
 
     void Start()
     {
         // Initialize the collectible counter text
         collectibleCounter.text = totalCollected + " / " + requiredCollectibles;
+
+        // Initially hide the pick-up prompt
+        pickUpPrompt.gameObject.SetActive(false);
     }
 
     void Update()
@@ -24,7 +28,8 @@ public class ObjectCollector : MonoBehaviour
         {
             if (hit.transform.CompareTag(collectibleTag))
             {
-                Debug.Log("Press E to pick up " + hit.transform.name);
+                // Show the pick-up prompt when aiming at a collectible
+                pickUpPrompt.gameObject.SetActive(true);
 
                 if (Input.GetKeyDown(KeyCode.E))
                 {
@@ -41,6 +46,16 @@ public class ObjectCollector : MonoBehaviour
                     }
                 }
             }
+            else
+            {
+                // Hide the pick-up prompt if not aiming at a collectible
+                pickUpPrompt.gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            // Hide the pick-up prompt if not aiming at anything
+            pickUpPrompt.gameObject.SetActive(false);
         }
     }
 }
