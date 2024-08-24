@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.TextCore;
 
 public class MeleeEnemy : MonoBehaviour
 {
@@ -210,6 +211,8 @@ public class MeleeEnemy : MonoBehaviour
                 agent.isStopped = true;
             }
 
+            FacePlayer();
+
             // Apply damage to enemy health
             if (enemyHealth != null)
             {
@@ -304,6 +307,19 @@ public class MeleeEnemy : MonoBehaviour
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
         return distanceToPlayer <= attackRadius;
+    }
+
+    private void FacePlayer()
+    {
+        if (player != null)
+        {
+            // Calculate the direction to the player
+            Vector3 directionToPlayer = (player.transform.position - transform.position).normalized;
+
+            // Rotate the enemy to face the player
+            Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
+            transform.rotation = lookRotation;
+        }
     }
 
     public void Die()

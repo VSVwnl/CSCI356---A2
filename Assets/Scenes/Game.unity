@@ -495,11 +495,11 @@ MonoBehaviour:
   animator: {fileID: 30031337}
   path: {fileID: 2064411719}
   sightDistance: 10
-  fieldOfView: 20
-  eyeHeight: 1.7
+  fieldOfView: 40
+  eyeHeight: 1.65
   gunBarrel: {fileID: 543854675}
   gun: {fileID: 113198987}
-  fireRate: 1
+  fireRate: 2
   stateDescription: 
   enemyUIPrefab: {fileID: 770865630}
   isHit: 0
@@ -801,7 +801,7 @@ MonoBehaviour:
   path: {fileID: 1222791130}
   attackRadius: 3
   attackRange: 2
-  meleeDamage: 10
+  meleeDamage: 15
   stateDescription: 
   enemyUIPrefab: {fileID: 198121957}
   isHit: 0
@@ -6478,7 +6478,7 @@ MonoBehaviour:
   animator: {fileID: 349759492}
   path: {fileID: 9167226662186620205}
   sightDistance: 10
-  fieldOfView: 20
+  fieldOfView: 60
   eyeHeight: 1.9
   gunBarrel: {fileID: 6328216087400203638}
   gun: {fileID: 814471923}
@@ -7187,7 +7187,7 @@ MonoBehaviour:
   animator: {fileID: 405465037}
   path: {fileID: 2012811712}
   sightDistance: 10
-  fieldOfView: 20
+  fieldOfView: 60
   eyeHeight: 1.9
   gunBarrel: {fileID: 217445312}
   gun: {fileID: 1902316849}
@@ -9564,7 +9564,7 @@ MonoBehaviour:
   path: {fileID: 1183718677}
   attackRadius: 3
   attackRange: 2
-  meleeDamage: 10
+  meleeDamage: 15
   stateDescription: 
   enemyUIPrefab: {fileID: 443202931}
   isHit: 0
@@ -10878,9 +10878,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 752280740}
   path: {fileID: 1763204422}
-  attackRadius: 3
-  attackRange: 2
-  meleeDamage: 10
+  attackRadius: 5
+  attackRange: 3
+  meleeDamage: 20
   stateDescription: 
   enemyUIPrefab: {fileID: 2129417339}
   isHit: 0
@@ -12157,7 +12157,7 @@ MonoBehaviour:
   eyeHeight: 1.7
   gunBarrel: {fileID: 1451134515}
   gun: {fileID: 1979691125}
-  fireRate: 1
+  fireRate: 1.5
   stateDescription: 
   enemyUIPrefab: {fileID: 1908140309}
   isHit: 0
@@ -13001,9 +13001,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 878558350}
   path: {fileID: 1085647726}
-  attackRadius: 3
-  attackRange: 2
-  meleeDamage: 10
+  attackRadius: 5
+  attackRange: 3
+  meleeDamage: 20
   stateDescription: 
   enemyUIPrefab: {fileID: 144551609}
   isHit: 0
@@ -14150,9 +14150,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 983297568}
   path: {fileID: 1921229145}
-  attackRadius: 3
-  attackRange: 2
-  meleeDamage: 10
+  attackRadius: 5
+  attackRange: 3
+  meleeDamage: 20
   stateDescription: 
   enemyUIPrefab: {fileID: 1120390803}
   isHit: 0
@@ -15770,7 +15770,7 @@ MonoBehaviour:
   path: {fileID: 455015078}
   attackRadius: 3
   attackRange: 2
-  meleeDamage: 10
+  meleeDamage: 15
   stateDescription: 
   enemyUIPrefab: {fileID: 837691743}
   isHit: 0
@@ -16567,11 +16567,11 @@ MonoBehaviour:
   animator: {fileID: 1180583787}
   path: {fileID: 1921229145}
   sightDistance: 10
-  fieldOfView: 20
-  eyeHeight: 1.7
+  fieldOfView: 40
+  eyeHeight: 1.65
   gunBarrel: {fileID: 1944757121}
   gun: {fileID: 632132286}
-  fireRate: 1
+  fireRate: 2
   stateDescription: 
   enemyUIPrefab: {fileID: 1233527900}
   isHit: 0
@@ -17087,11 +17087,11 @@ MonoBehaviour:
   animator: {fileID: 1185345979}
   path: {fileID: 1085647726}
   sightDistance: 10
-  fieldOfView: 20
-  eyeHeight: 1.7
+  fieldOfView: 40
+  eyeHeight: 1.65
   gunBarrel: {fileID: 2126737982}
   gun: {fileID: 2054258751}
-  fireRate: 1
+  fireRate: 2
   stateDescription: 
   enemyUIPrefab: {fileID: 1587866988}
   isHit: 0
@@ -17591,9 +17591,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 1197018302}
   path: {fileID: 694959733}
-  attackRadius: 3
-  attackRange: 2
-  meleeDamage: 10
+  attackRadius: 5
+  attackRange: 3
+  meleeDamage: 20
   stateDescription: 
   enemyUIPrefab: {fileID: 1652364489}
   isHit: 0
@@ -20284,7 +20284,7 @@ MonoBehaviour:
   path: {fileID: 1183718677}
   attackRadius: 3
   attackRange: 2
-  meleeDamage: 10
+  meleeDamage: 15
   stateDescription: 
   enemyUIPrefab: {fileID: 2046370419}
   isHit: 0
@@ -22155,7 +22155,7 @@ MonoBehaviour:
   path: {fileID: 102162411}
   attackRadius: 3
   attackRange: 2
-  meleeDamage: 10
+  meleeDamage: 15
   stateDescription: 
   enemyUIPrefab: {fileID: 1304160468}
   isHit: 0
@@ -23019,7 +23019,7 @@ MonoBehaviour:
   path: {fileID: 455015078}
   attackRadius: 3
   attackRange: 2
-  meleeDamage: 10
+  meleeDamage: 15
   stateDescription: 
   enemyUIPrefab: {fileID: 659743423}
   isHit: 0
@@ -23366,7 +23366,7 @@ MonoBehaviour:
   eyeHeight: 1.7
   gunBarrel: {fileID: 426328561}
   gun: {fileID: 525326959}
-  fireRate: 1
+  fireRate: 1.5
   stateDescription: 
   enemyUIPrefab: {fileID: 212093560}
   isHit: 0
@@ -24104,7 +24104,7 @@ MonoBehaviour:
   animator: {fileID: 1552648223}
   path: {fileID: 129873801}
   sightDistance: 10
-  fieldOfView: 20
+  fieldOfView: 60
   eyeHeight: 1
   gunBarrel: {fileID: 1497130070}
   gun: {fileID: 48326906}
@@ -27065,7 +27065,7 @@ MonoBehaviour:
   animator: {fileID: 1780242778}
   path: {fileID: 9167226662186620205}
   sightDistance: 10
-  fieldOfView: 20
+  fieldOfView: 60
   eyeHeight: 1.9
   gunBarrel: {fileID: 1373307623}
   gun: {fileID: 660993824}
@@ -27967,7 +27967,7 @@ MonoBehaviour:
   animator: {fileID: 1837213750}
   path: {fileID: 1865956861}
   sightDistance: 10
-  fieldOfView: 20
+  fieldOfView: 60
   eyeHeight: 1.9
   gunBarrel: {fileID: 2022315213}
   gun: {fileID: 1816177679}
@@ -30104,7 +30104,7 @@ MonoBehaviour:
   animator: {fileID: 1926658544}
   path: {fileID: 129873801}
   sightDistance: 10
-  fieldOfView: 20
+  fieldOfView: 60
   eyeHeight: 1
   gunBarrel: {fileID: 1181073293}
   gun: {fileID: 1805563361}
@@ -30441,7 +30441,7 @@ MonoBehaviour:
   eyeHeight: 1.7
   gunBarrel: {fileID: 1678836920}
   gun: {fileID: 1451349693}
-  fireRate: 1
+  fireRate: 1.5
   stateDescription: 
   enemyUIPrefab: {fileID: 935500350}
   isHit: 0

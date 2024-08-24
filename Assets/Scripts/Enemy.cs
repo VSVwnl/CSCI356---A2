@@ -225,6 +225,8 @@ public class Enemy : MonoBehaviour
                 agent.isStopped = true; // Stop the agent when hit
             }
 
+            FacePlayer();
+
             // Apply damage to the enemy's health
             if (enemyHealth != null)
             {
@@ -260,6 +262,19 @@ public class Enemy : MonoBehaviour
         if (!isDead && CanSeePlayer())
         {
             StartAttack();
+        }
+    }
+
+    private void FacePlayer()
+    {
+        if (player != null)
+        {
+            // Calculate the direction to the player
+            Vector3 directionToPlayer = (player.transform.position - transform.position).normalized;
+
+            // Rotate the enemy to face the player
+            Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
+            transform.rotation = lookRotation;
         }
     }
 
