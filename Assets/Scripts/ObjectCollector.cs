@@ -16,7 +16,8 @@ public class ObjectCollector : MonoBehaviour
     void Start()
     {
         // Initialize the collectible counter text
-        collectibleCounter.text = totalCollected + " / " + requiredCollectibles;
+        collectibleCounter.text = totalCollected + " / " +
+             + requiredCollectibles +  " Talismans Found";
 
         // Initially hide the pick-up prompt
         pickUpPrompt.gameObject.SetActive(false);
@@ -53,7 +54,7 @@ public class ObjectCollector : MonoBehaviour
                     totalCollected++;
 
                     // Update the collectible counter text
-                    collectibleCounter.text = totalCollected + " / " + requiredCollectibles;
+                    collectibleCounter.text = totalCollected + " / " + requiredCollectibles + " Talismans Found";
 
                     // Check if the player has collected the required number of items
                     if (totalCollected >= requiredCollectibles)

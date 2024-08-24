@@ -12,13 +12,17 @@ public class Shooter : MonoBehaviour
     public float bulletImpulse = 20.0f;
 
     private bool isShooting = false;    // Flag to track continuous fire
-    private float fireDelay = 0.2f;     // Delay between shots
+    private float fireDelay = 0.4f;     // Delay between shots
     private float lastFireTime;         // Time of the last shot
 
     public int weaponType = 1;         // Set weapon to 1.
     public GameObject[] hiddenObjects; // Array of hidden objects to activate based on weapon chosen
 
     private TalismanHighlight lastHighlightedTalisman; // Reference to the last highlighted talisman
+
+    // Ammunition tracking
+    public int maxAmmunition = 10;     // Maximum bullets in the magazine
+    private int currentAmmunition;     // Current bullets available
 
     // Start is called before the first frame update
     void Start()
@@ -33,6 +37,9 @@ public class Shooter : MonoBehaviour
         // Set and display the first weapon on start
         weaponType = 1;
         changeWeapon(weaponType);
+
+        // Initialize ammunition
+        currentAmmunition = maxAmmunition;
     }
 
     public void CycleWeapons()
@@ -68,8 +75,6 @@ public class Shooter : MonoBehaviour
         // centre of screen and caters for font size
         float posX = cam.pixelWidth / 2 - size / 4;
         float posY = cam.pixelHeight / 2 - size / 2;
-
-     
     }
 
     // Update is called once per frame
@@ -103,12 +108,12 @@ public class Shooter : MonoBehaviour
         }
 
         // Weapon logic for handgun
-        if (weaponType == 1 && Input.GetMouseButtonDown(0))
+        if (weaponType == 2 && Input.GetMouseButtonDown(0))
         {
             HandleHandgunFire(ray);
         }
         // Weapon logic for machine gun
-        else if (weaponType == 2)
+        else if (weaponType == 1)
         {
             if (Input.GetMouseButtonDown(0)) isShooting = true;
             if (Input.GetMouseButtonUp(0)) isShooting = false;
@@ -119,15 +124,22 @@ public class Shooter : MonoBehaviour
                 lastFireTime = Time.time;
             }
         }
-        // Weapon logic for shotgun
-        else if (weaponType == 3 && Input.GetMouseButtonDown(0))
+
+        // Reloading logic
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            HandleShotgunFire(ray);
+            Reload();
         }
     }
 
     void HandleHandgunFire(Ray ray)
     {
+        if (currentAmmunition <= 0)
+        {
+            // Optionally, play an empty ammo sound or show a UI indicator
+            return; // No more ammo to fire
+        }
+
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
@@ -139,12 +151,19 @@ public class Shooter : MonoBehaviour
                 hit.rigidbody.AddForceAtPosition(impulse, hit.point, ForceMode.Impulse);
                 target.ApplyDamage(5);
                 StartCoroutine(GenerateBullet(hit, ray.origin));
+                currentAmmunition--;
             }
         }
     }
 
     void HandleMachineGunFire(Ray ray)
     {
+        if (currentAmmunition <= 0)
+        {
+            // Optionally, play an empty ammo sound or show a UI indicator
+            return; // No more ammo to fire
+        }
+
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
@@ -157,32 +176,25 @@ public class Shooter : MonoBehaviour
                 target.ApplyDamage(10);
                 StartCoroutine(GeneratePS(hit));
                 StartCoroutine(GenerateBullet(hit, ray.origin));
+                currentAmmunition--;
             }
         }
     }
 
     void HandleShotgunFire(Ray ray)
     {
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit))
-        {
-            Shootable target = hit.transform.GetComponent<Shootable>();
-
-            if (target != null)
-            {
-                Vector3 impulse = Vector3.Normalize(hit.point - transform.position) * impulseStrength;
-                hit.rigidbody.AddForceAtPosition(impulse, hit.point, ForceMode.Impulse);
-                target.ApplyDamage(15);
-                StartCoroutine(GenerateAlotBullet(hit, ray.origin));
-            }
-        }
+        // Removed shotgun logic
     }
 
     private IEnumerator GeneratePS(RaycastHit hit)
     {
-        GameObject ps = Instantiate(particleSysPrefab, hit.point, Quaternion.LookRotation(hit.normal));
-        yield return new WaitForSeconds(1);
-        Destroy(ps);
+        // Only generate particles if there is ammunition
+        if (currentAmmunition > 0)
+        {
+            GameObject ps = Instantiate(particleSysPrefab, hit.point, Quaternion.LookRotation(hit.normal));
+            yield return new WaitForSeconds(1);
+            Destroy(ps);
+        }
     }
 
     private IEnumerator GenerateBullet(RaycastHit hit, Vector3 point)
@@ -202,6 +214,9 @@ public class Shooter : MonoBehaviour
     {
         for (int i = 0; i < 7; i++)
         {
+            if (currentAmmunition <= 0)
+                yield break; // Exit if out of ammunition
+
             GameObject bullet = Instantiate(bulletPrefab);
             bullet.transform.position = cam.transform.position + cam.transform.forward * 2;
             Rigidbody target = bullet.GetComponent<Rigidbody>();
@@ -211,5 +226,11 @@ public class Shooter : MonoBehaviour
             target.AddForceAtPosition(impulse, cam.transform.position, ForceMode.Impulse);
             yield return new WaitForSeconds(0.05f);  // Short delay between bullets
         }
+    }
+
+    // Optional: Method to reload and refill ammunition
+    public void Reload()
+    {
+        currentAmmunition = maxAmmunition;
     }
 }
