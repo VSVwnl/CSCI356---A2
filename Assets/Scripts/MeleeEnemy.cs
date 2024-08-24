@@ -37,6 +37,7 @@ public class MeleeEnemy : MonoBehaviour
     public bool isDead = false;
 
     private Coroutine attackCoroutine;
+    private int wayPointIndex = 0;
 
     void Awake()
     {
@@ -253,7 +254,14 @@ public class MeleeEnemy : MonoBehaviour
     {
         if (agent.remainingDistance < 0.2f)
         {
-            int wayPointIndex = Random.Range(0, path.waypoints.Count);
+            if (wayPointIndex < path.waypoints.Count - 1)
+            {
+                wayPointIndex++;
+            }
+            else
+            {
+                wayPointIndex = 0;
+            }
             agent.SetDestination(path.waypoints[wayPointIndex].position);
         }
 

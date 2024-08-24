@@ -45,7 +45,9 @@ public class Enemy : MonoBehaviour
 
     private Vector3 originalGunPosition;
     private Quaternion originalGunRotation;
-   
+
+    private int wayPointIndex = 0;
+
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -265,8 +267,14 @@ public class Enemy : MonoBehaviour
     {
         if (agent.remainingDistance < 0.2f)
         {
-            // Move to the next waypoint
-            int wayPointIndex = Random.Range(0, path.waypoints.Count); // Example logic to select a waypoint
+            if (wayPointIndex < path.waypoints.Count - 1)
+            {
+                wayPointIndex++;
+            }
+            else
+            {
+                wayPointIndex = 0;
+            }
             agent.SetDestination(path.waypoints[wayPointIndex].position);
         }
 
