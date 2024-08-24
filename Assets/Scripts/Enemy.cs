@@ -72,12 +72,8 @@ public class Enemy : MonoBehaviour
     {
         if (isDead)
         {
-            // Set the position to ensure it is correct
-            Vector3 currentPosition = agent.transform.position;
-            Vector3 newPosition = new Vector3(currentPosition.x, currentPosition.y - 0.99f, currentPosition.z);
-
-            // Set the position
-            agent.transform.position = newPosition;
+            HandleDeadState();
+            return;
         }
 
         if (!isHit) // Prevent other actions while hit animation is playing
@@ -101,6 +97,13 @@ public class Enemy : MonoBehaviour
             PositionUIAboveEnemy();
             FaceCamera();
         }
+    }
+
+    private void HandleDeadState()
+    {
+        Vector3 currentPosition = agent.transform.position;
+        Vector3 newPosition = new Vector3(currentPosition.x, currentPosition.y - 0.99f, currentPosition.z);
+        agent.transform.position = newPosition;
     }
 
     public bool CanSeePlayer()
@@ -205,7 +208,7 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if (isDead) return; // If the enemy is dead, do nothing
+        if (isDead) return;
 
         if (!isHit)
         {
