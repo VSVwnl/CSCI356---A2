@@ -4,9 +4,9 @@ using System;
 using UnityEngine;
 using System.Collections;
 using UnityEngine.InputSystem;
+using JetBrains.Annotations;
 
-namespace InfimaGames.LowPolyShooterPack
-{
+namespace InfimaGames.LowPolyShooterPack { 
 	/// <summary>
 	/// Main Character Component. This component handles the most important functions of the character, and interfaces
 	/// with basically every part of the asset, it is the hub where it all converges.
@@ -148,7 +148,7 @@ namespace InfimaGames.LowPolyShooterPack
 		/// True if the game cursor is locked! Used when pressing "Escape" to allow developers to more easily access the editor.
 		/// </summary>
 		private bool cursorLocked;
-
+		
 		#endregion
 
 		#region CONSTANTS
@@ -162,7 +162,7 @@ namespace InfimaGames.LowPolyShooterPack
 		/// Hashed "Movement".
 		/// </summary>
 		private static readonly int HashMovement = Animator.StringToHash("Movement");
-
+		public Shooter shooterScript;
 		#endregion
 
 		#region UNITY
@@ -180,7 +180,7 @@ namespace InfimaGames.LowPolyShooterPack
 
 			//Cache the CharacterKinematics component.
 			characterKinematics = GetComponent<CharacterKinematics>();
-
+			
 			//Initialize Inventory.
 			inventory.Init();
 
@@ -741,7 +741,8 @@ namespace InfimaGames.LowPolyShooterPack
 					//Get the index increment direction for our inventory using the scroll wheel direction. If we're not
 					//actually using one, then just increment by one.
 					float scrollValue = context.valueType.IsEquivalentTo(typeof(Vector2)) ? Mathf.Sign(context.ReadValue<Vector2>().y) : 1.0f;
-					
+					shooterScript.GetComponent<Shooter>().CycleWeapons();
+
 					//Get the next index to switch to.
 					int indexNext = scrollValue > 0 ? inventory.GetNextIndex() : inventory.GetLastIndex();
 					//Get the current weapon's index.

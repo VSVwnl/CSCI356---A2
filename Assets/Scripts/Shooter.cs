@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +13,7 @@ public class Shooter : MonoBehaviour
     public float bulletImpulse = 20.0f;
 
     private bool isShooting = false;    // Flag to track continuous fire
-    private float fireDelay = 0.4f;     // Delay between shots
+    private float fireDelay = 0.1f;     // Delay between shots
     private float lastFireTime;         // Time of the last shot
 
     public int weaponType = 1;         // Set weapon to 1.
@@ -22,14 +23,18 @@ public class Shooter : MonoBehaviour
 
     // Ammunition tracking
     public int maxAmmunition = 10;     // Maximum bullets in the magazine
-    private int currentAmmunition;     // Current bullets available
+    private int currentAmmunition;      // Current bullets available
+    private int currentPistolAmmo;      // Current Pistol available
+    private int currentARAmmo;          // Current AR Ammo Available
+    public int MaxARAMMO = 30;          // Max AR Ammo
+    public int MaxPistolAMMO = 10;      // Max Pistol Ammo
 
     // Start is called before the first frame update
     void Start()
     {
         // gets the GameObject's camera component
         cam = GetComponentInChildren<Camera>();
-
+        
         // hide the mouse cursor at the centre of the screen
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -39,14 +44,16 @@ public class Shooter : MonoBehaviour
         changeWeapon(weaponType);
 
         // Initialize ammunition
-        currentAmmunition = maxAmmunition;
+        //currentAmmunition = maxAmmunition;
+        currentPistolAmmo = MaxPistolAMMO;
+        currentARAmmo = MaxARAMMO;
     }
 
     public void CycleWeapons()
     {
         weaponType++;
 
-        if (weaponType > hiddenObjects.Length)
+        if (weaponType > 2)
         {
             weaponType = 1; // Reset to first weapon if exceeding available weapons
         }
@@ -85,7 +92,9 @@ public class Shooter : MonoBehaviour
         {
             CycleWeapons();
         }
-
+        Debug.Log("Current Weapon Is " + weaponType);
+        Debug.Log("AMMO FOR PISTOL IS " + currentPistolAmmo);
+        Debug.Log("AMMO FOR AR IS " + currentARAmmo);
         // Raycasting for charm highlighting (regardless of weapon type)
         Vector3 point = new Vector3(cam.pixelWidth / 2, cam.pixelHeight / 2, 0);
         Ray ray = cam.ScreenPointToRay(point);
@@ -134,36 +143,40 @@ public class Shooter : MonoBehaviour
 
     void HandleHandgunFire(Ray ray)
     {
-        if (currentAmmunition <= 0)
+        if (currentPistolAmmo == 0)
         {
             // Optionally, play an empty ammo sound or show a UI indicator
+            Debug.Log("NO AMMO FOR PISTOL");
             return; // No more ammo to fire
         }
+        currentPistolAmmo--;
+
 
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out hit)) 
         {
             Shootable target = hit.transform.GetComponent<Shootable>();
-
+            
             if (target != null)
             {
                 Vector3 impulse = Vector3.Normalize(hit.point - transform.position) * impulseStrength;
                 hit.rigidbody.AddForceAtPosition(impulse, hit.point, ForceMode.Impulse);
                 target.ApplyDamage(5);
                 StartCoroutine(GenerateBullet(hit, ray.origin));
-                currentAmmunition--;
+                
             }
         }
     }
 
     void HandleMachineGunFire(Ray ray)
     {
-        if (currentAmmunition <= 0)
+        if (currentARAmmo == 0)
         {
             // Optionally, play an empty ammo sound or show a UI indicator
+            Debug.Log("NO AMMO FOR AR");
             return; // No more ammo to fire
         }
-
+        currentARAmmo--;
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
@@ -176,7 +189,7 @@ public class Shooter : MonoBehaviour
                 target.ApplyDamage(10);
                 StartCoroutine(GeneratePS(hit));
                 StartCoroutine(GenerateBullet(hit, ray.origin));
-                currentAmmunition--;
+               
             }
         }
     }
@@ -189,7 +202,7 @@ public class Shooter : MonoBehaviour
     private IEnumerator GeneratePS(RaycastHit hit)
     {
         // Only generate particles if there is ammunition
-        if (currentAmmunition > 0)
+        if (currentPistolAmmo > 0 || currentARAmmo > 0)
         {
             GameObject ps = Instantiate(particleSysPrefab, hit.point, Quaternion.LookRotation(hit.normal));
             yield return new WaitForSeconds(1);
@@ -231,6 +244,8 @@ public class Shooter : MonoBehaviour
     // Optional: Method to reload and refill ammunition
     public void Reload()
     {
-        currentAmmunition = maxAmmunition;
+        //currentAmmunition = maxAmmunition;
+        currentARAmmo = MaxARAMMO;
+        currentPistolAmmo = MaxPistolAMMO;
     }
 }

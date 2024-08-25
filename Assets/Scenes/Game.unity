@@ -4336,7 +4336,9 @@ MonoBehaviour:
   bulletImpulse: 20
   weaponType: 1
   hiddenObjects: []
-  maxAmmunition: 30
+  maxAmmunition: 10
+  MaxARAMMO: 30
+  MaxPistolAMMO: 10
 --- !u!114 &192405009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32986,6 +32988,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 222023640}
     m_Modifications:
+    - target: {fileID: 434113066, guid: 19eadcf8fbed56b4da77ca94c1b4145f, type: 3}
+      propertyPath: shooterScript
+      value: 
+      objectReference: {fileID: 192405008}
     - target: {fileID: 448958757, guid: 19eadcf8fbed56b4da77ca94c1b4145f, type: 3}
       propertyPath: jumpForce
       value: 7
