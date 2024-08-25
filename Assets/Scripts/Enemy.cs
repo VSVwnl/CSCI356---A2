@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -247,6 +248,12 @@ public class Enemy : MonoBehaviour
 
             FacePlayer();
 
+            if (gun != null)
+            {
+                gun.transform.localPosition = originalGunPosition;
+                gun.transform.localRotation = originalGunRotation;
+            }
+
             // Apply damage to the enemy's health
             if (enemyHealth != null)
             {
@@ -362,6 +369,11 @@ public class Enemy : MonoBehaviour
         if (animator != null)
         {
             animator.SetBool("isDead", true); // Set the isDead boolean to true
+        }
+
+        if (enemyUIPrefab != null)
+        {
+            enemyUIPrefab.gameObject.SetActive(false);
         }
 
         // Stop the NavMeshAgent to prevent further movement
