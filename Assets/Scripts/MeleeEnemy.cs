@@ -338,6 +338,12 @@ public class MeleeEnemy : MonoBehaviour
         {
             agent.isStopped = true;
         }
+
+        PlayerHealth playerHealth = player.GetComponentInParent<PlayerHealth>();
+        if (playerHealth != null)
+        {
+            playerHealth.RestoreHealth();
+        }
     }
 
     private void OnDrawGizmos()

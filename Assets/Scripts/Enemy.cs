@@ -381,6 +381,13 @@ public class Enemy : MonoBehaviour
         {
             agent.isStopped = true;
         }
+
+        PlayerHealth playerHealth = player.GetComponentInParent<PlayerHealth>();
+        if (playerHealth != null)
+        {
+            playerHealth.RestoreHealth();
+        }
+
     }
 
 

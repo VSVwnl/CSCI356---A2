@@ -64,12 +64,13 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log("Player took " + damage + " damage.");
     }
 
-    /*
-    public void RestoreHealth(float healAmount)
+
+    public void RestoreHealth()
     {
-        health += healAmount;
+        health = maxHealth;
         lerpTimer = 0f;
         healthText.text = Mathf.RoundToInt(health) + "/" + Mathf.RoundToInt(maxHealth);
+        UpdateHealthUI(); 
     }
-    */
+
 }
