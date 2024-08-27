@@ -13,6 +13,7 @@ public class Shooter : MonoBehaviour
     public float bulletImpulse = 20.0f;
 
     private bool isShooting = false;    // Flag to track continuous fire
+    public bool isReloading = false;
     private float fireDelay = 0.1f;     // Delay between shots
     private float lastFireTime;         // Time of the last shot
 
@@ -34,7 +35,7 @@ public class Shooter : MonoBehaviour
     {
         // gets the GameObject's camera component
         cam = GetComponentInChildren<Camera>();
-        
+
         // hide the mouse cursor at the centre of the screen
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -51,14 +52,24 @@ public class Shooter : MonoBehaviour
 
     public void CycleWeapons()
     {
-        weaponType++;
-
-        if (weaponType > 2)
+        if (!isReloading)
         {
-            weaponType = 1; // Reset to first weapon if exceeding available weapons
-        }
 
-        changeWeapon(weaponType);
+            weaponType++;
+
+            if (weaponType > 2)
+            {
+                weaponType = 1; // Reset to first weapon if exceeding available weapons
+            }
+
+
+            changeWeapon(weaponType);
+
+        }
+        else
+        {
+            return;
+        }
     }
 
     public void changeWeapon(int weapon)
@@ -88,13 +99,11 @@ public class Shooter : MonoBehaviour
     void Update()
     {
         // Weapon switching logic
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            CycleWeapons();
-        }
+
         Debug.Log("Current Weapon Is " + weaponType);
-        Debug.Log("AMMO FOR PISTOL IS " + currentPistolAmmo);
-        Debug.Log("AMMO FOR AR IS " + currentARAmmo);
+        // Debug.Log("AMMO FOR PISTOL IS " + currentPistolAmmo);
+        //Debug.Log("AMMO FOR AR IS " + currentARAmmo);
+        Debug.Log("isReloading = " + isReloading);
         // Raycasting for charm highlighting (regardless of weapon type)
         Vector3 point = new Vector3(cam.pixelWidth / 2, cam.pixelHeight / 2, 0);
         Ray ray = cam.ScreenPointToRay(point);
@@ -117,7 +126,7 @@ public class Shooter : MonoBehaviour
         }
 
         // Weapon logic for handgun
-        if (weaponType == 2 && Input.GetMouseButtonDown(0))
+        if (weaponType == 2 && Input.GetMouseButtonDown(0) && !isReloading)
         {
             HandleHandgunFire(ray);
         }
@@ -127,7 +136,7 @@ public class Shooter : MonoBehaviour
             if (Input.GetMouseButtonDown(0)) isShooting = true;
             if (Input.GetMouseButtonUp(0)) isShooting = false;
 
-            if (isShooting && Time.time - lastFireTime >= fireDelay)
+            if (isShooting && Time.time - lastFireTime >= fireDelay && !isReloading)
             {
                 HandleMachineGunFire(ray);
                 lastFireTime = Time.time;
@@ -153,17 +162,17 @@ public class Shooter : MonoBehaviour
 
 
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit)) 
+        if (Physics.Raycast(ray, out hit))
         {
             Shootable target = hit.transform.GetComponent<Shootable>();
-            
+
             if (target != null)
             {
                 Vector3 impulse = Vector3.Normalize(hit.point - transform.position) * impulseStrength;
                 hit.rigidbody.AddForceAtPosition(impulse, hit.point, ForceMode.Impulse);
                 target.ApplyDamage(5);
                 StartCoroutine(GenerateBullet(hit, ray.origin));
-                
+
             }
         }
     }
@@ -189,7 +198,7 @@ public class Shooter : MonoBehaviour
                 target.ApplyDamage(10);
                 StartCoroutine(GeneratePS(hit));
                 StartCoroutine(GenerateBullet(hit, ray.origin));
-               
+
             }
         }
     }
@@ -240,12 +249,27 @@ public class Shooter : MonoBehaviour
             yield return new WaitForSeconds(0.05f);  // Short delay between bullets
         }
     }
+    private IEnumerator ReloadReset()
+    {
+        isReloading = true;
+        yield return new WaitForSeconds(2.3f);
+        isReloading = false;
+
+    }
 
     // Optional: Method to reload and refill ammunition
     public void Reload()
     {
+        StartCoroutine(ReloadReset());
         //currentAmmunition = maxAmmunition;
-        currentARAmmo = MaxARAMMO;
-        currentPistolAmmo = MaxPistolAMMO;
+        if (weaponType == 1)
+        {
+            currentARAmmo = MaxARAMMO;
+        }
+        else if (weaponType == 2)
+        {
+            currentPistolAmmo = MaxPistolAMMO;
+        }
+
     }
 }
