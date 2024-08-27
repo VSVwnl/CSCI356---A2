@@ -21,6 +21,7 @@ TagManager:
   - Ground
   - Enemy
   - Collectible
+  - Bonus
   layers:
   - Default
   - TransparentFX
