@@ -1,66 +1,68 @@
-using System.Collections;
-using System.Collections.Generic;
+using InfimaGames.LowPolyShooterPack;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI; // Add this to use UI elements
+using UnityEngine.UI;
 
 public class PauseMenuManager : MonoBehaviour
 {
-    public AudioMixer audioMixer;
-    public MouseLook mouseLook;
-    public GameObject pauseMenuUI; // Reference to your pause menu UI
-    public Slider sensitivitySlider; // Reference to your sensitivity slider
-
-    private bool isPaused = false;
+    public AudioMixer mainMixer;
+    public CameraLook cameraLook;
+    public Slider sensitivitySlider;
+    public Slider volumeSlider;
 
     private void Start()
     {
         // Load and apply saved settings
         LoadSettings();
 
-        // Initialize the sensitivity slider value based on MouseLook settings
-        if (sensitivitySlider != null && mouseLook != null)
+        // Initialize sensitivity slider with saved sensitivity
+        if (sensitivitySlider != null && PlayerPrefs.HasKey("Sensitivity"))
         {
-            sensitivitySlider.value = mouseLook.sensitivityHor;
+            sensitivitySlider.value = PlayerPrefs.GetFloat("Sensitivity");
         }
-    }
 
-    private void Update()
-    {
-        // Toggle pause menu with ESC key
-        if (Input.GetKeyDown(KeyCode.Escape))
+        // Add listener to update sensitivity when slider changes
+        if (sensitivitySlider != null)
         {
-            if (isPaused)
-            {
-                ResumeGame();
-            }
-            else
-            {
-                PauseGame();
-            }
+            sensitivitySlider.onValueChanged.AddListener(delegate { setMouseSensitivity(sensitivitySlider.value); });
+        }
+
+        // Initialize volume slider with saved volume
+        if (volumeSlider != null && PlayerPrefs.HasKey("Volume"))
+        {
+            volumeSlider.value = PlayerPrefs.GetFloat("Volume");
+        }
+
+        // Add listener to update volume when slider changes
+        if (volumeSlider != null)
+        {
+            volumeSlider.onValueChanged.AddListener(delegate { setVolume(volumeSlider.value); });
         }
     }
 
     public void setVolume(float volume)
     {
         Debug.Log("Volume = " + volume);
-        audioMixer.SetFloat("Volume", volume);
-        PlayerPrefs.SetFloat("Volume", volume);
+        // Convert volume to decibels
+        float volumeInDb = Mathf.Log10(volume) * 20;
+
+        // Set the volume for the main mixer
+        if (mainMixer != null)
+        {
+            mainMixer.SetFloat("Volume", volumeInDb);
+        }
+
+        PlayerPrefs.SetFloat("Volume", volume); // Save the volume setting
+        PlayerPrefs.Save(); // Save all changes immediately
     }
 
     public void setMouseSensitivity(float sensitivity)
     {
-        Debug.Log("Sens = " + sensitivity);
-        mouseLook.sensitivityHor = sensitivity;
-        mouseLook.sensitivityVert = sensitivity;
-        PlayerPrefs.SetFloat("Sensitivity", sensitivity);
-
-        // Update slider value to reflect the current sensitivity
-        if (sensitivitySlider != null)
-        {
-            sensitivitySlider.value = sensitivity;
-        }
+        Debug.Log("Sensitivity = " + sensitivity);
+        cameraLook.sensitivity = new Vector2(sensitivity, sensitivity); // Adjust both X and Y sensitivity
+        PlayerPrefs.SetFloat("Sensitivity", sensitivity); // Save the sensitivity setting
+        PlayerPrefs.Save(); // Save all changes immediately
     }
 
     public void setDisplayMode(int mode)
@@ -86,7 +88,8 @@ public class PauseMenuManager : MonoBehaviour
                 break;
         }
 
-        PlayerPrefs.SetInt("DisplayMode", mode);
+        PlayerPrefs.SetInt("DisplayMode", mode); // Save the display mode setting
+        PlayerPrefs.Save(); // Save all changes immediately
     }
 
     private void LoadSettings()
@@ -95,48 +98,26 @@ public class PauseMenuManager : MonoBehaviour
         if (PlayerPrefs.HasKey("Volume"))
         {
             float savedVolume = PlayerPrefs.GetFloat("Volume");
-            setVolume(savedVolume);
+            setVolume(savedVolume); // Apply saved volume
         }
 
         // Load mouse sensitivity setting
         if (PlayerPrefs.HasKey("Sensitivity"))
         {
             float savedSensitivity = PlayerPrefs.GetFloat("Sensitivity");
-            setMouseSensitivity(savedSensitivity);
+            setMouseSensitivity(savedSensitivity); // Apply saved sensitivity
         }
 
         // Load display mode setting
         if (PlayerPrefs.HasKey("DisplayMode"))
         {
             int savedMode = PlayerPrefs.GetInt("DisplayMode");
-            setDisplayMode(savedMode);
+            setDisplayMode(savedMode); // Apply saved display mode
         }
     }
 
-    public void ReturnGame()
+    public void ReturnToGame()
     {
         SceneManager.LoadScene("Game");
-    }
-
-    public void PauseGame()
-    {
-        pauseMenuUI.SetActive(true); // Show pause menu
-        Time.timeScale = 0f; // Pause game time
-        isPaused = true;
-
-        // Update the slider value to the current sensitivity when the pause menu is opened
-        if (sensitivitySlider != null)
-        {
-            sensitivitySlider.value = PlayerPrefs.GetFloat("Sensitivity", mouseLook.sensitivityHor);
-        }
-    }
-
-    public void ResumeGame()
-    {
-        pauseMenuUI.SetActive(false); // Hide pause menu
-        Time.timeScale = 1f; // Resume game time
-        isPaused = false;
-
-        // Optionally, you could reapply any settings or updates here if needed
     }
 }

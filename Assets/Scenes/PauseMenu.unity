@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -614,14 +614,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 932737680}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d735702723b1a62428ee8d8339b8dc20, type: 3}
+  m_Script: {fileID: 11500000, guid: a74379b44be369043afd8160e1b39c49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  axes: 1
-  sensitivityHor: 9
-  sensitivityVert: 9
-  minimumVert: -45
-  maximumVert: 45
+  sensitivity: {x: 1, y: 1}
+  yClamp: {x: -60, y: 60}
+  smooth: 0
+  interpolationSpeed: 25
 --- !u!81 &932737682
 AudioListener:
   m_ObjectHideFlags: 0
@@ -1435,7 +1434,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.000011444, y: -176}
+  m_AnchoredPosition: {x: 0.000011444, y: -194}
   m_SizeDelta: {x: 221.2762, y: 50.0975}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1517654050
@@ -1484,7 +1483,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1586095453}
         m_TargetAssemblyTypeName: PauseMenuManager, Assembly-CSharp
-        m_MethodName: ReturnGame
+        m_MethodName: ReturnToGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1592,7 +1591,8 @@ MonoBehaviour:
   m_text: Sensitivity
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a065630cb0f233e478f8eac4ca11abbc, type: 2}
-  m_sharedMaterial: {fileID: 5108250371085086237, guid: a065630cb0f233e478f8eac4ca11abbc, type: 2}
+  m_sharedMaterial: {fileID: 5108250371085086237, guid: a065630cb0f233e478f8eac4ca11abbc,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1607,7 +1607,8 @@ MonoBehaviour:
     topRight: {r: 1, g: 1, b: 1, a: 1}
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
-  m_fontColorGradientPreset: {fileID: 11400000, guid: 18eed6a8c45b7434197cc91afb4482b9, type: 2}
+  m_fontColorGradientPreset: {fileID: 11400000, guid: 18eed6a8c45b7434197cc91afb4482b9,
+    type: 2}
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
@@ -1714,10 +1715,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 781e475b203006c44aaca5e23fe5a5c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioMixer: {fileID: 24100000, guid: 8ad688440b4b6e148bbbf96e41bb2146, type: 2}
-  mouseLook: {fileID: 932737681}
-  pauseMenuUI: {fileID: 1471864790}
+  mainMixer: {fileID: 24100000, guid: 3fcdb23bde063e94fa0b60ccf87604d6, type: 2}
+  effectsMixer: {fileID: 24100000, guid: 8ad688440b4b6e148bbbf96e41bb2146, type: 2}
+  cameraLook: {fileID: 932737681}
   sensitivitySlider: {fileID: 1505466125}
+  volumeSlider: {fileID: 1358874774}
 --- !u!1 &1600438526
 GameObject:
   m_ObjectHideFlags: 0
@@ -1780,7 +1782,8 @@ MonoBehaviour:
 '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a065630cb0f233e478f8eac4ca11abbc, type: 2}
-  m_sharedMaterial: {fileID: 5108250371085086237, guid: a065630cb0f233e478f8eac4ca11abbc, type: 2}
+  m_sharedMaterial: {fileID: 5108250371085086237, guid: a065630cb0f233e478f8eac4ca11abbc,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1795,7 +1798,8 @@ MonoBehaviour:
     topRight: {r: 1, g: 1, b: 1, a: 1}
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
-  m_fontColorGradientPreset: {fileID: 11400000, guid: 18eed6a8c45b7434197cc91afb4482b9, type: 2}
+  m_fontColorGradientPreset: {fileID: 11400000, guid: 18eed6a8c45b7434197cc91afb4482b9,
+    type: 2}
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
@@ -2350,7 +2354,8 @@ MonoBehaviour:
 '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a065630cb0f233e478f8eac4ca11abbc, type: 2}
-  m_sharedMaterial: {fileID: 5108250371085086237, guid: a065630cb0f233e478f8eac4ca11abbc, type: 2}
+  m_sharedMaterial: {fileID: 5108250371085086237, guid: a065630cb0f233e478f8eac4ca11abbc,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2365,7 +2370,8 @@ MonoBehaviour:
     topRight: {r: 1, g: 1, b: 1, a: 1}
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
-  m_fontColorGradientPreset: {fileID: 11400000, guid: 18eed6a8c45b7434197cc91afb4482b9, type: 2}
+  m_fontColorGradientPreset: {fileID: 11400000, guid: 18eed6a8c45b7434197cc91afb4482b9,
+    type: 2}
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
@@ -2484,7 +2490,8 @@ MonoBehaviour:
   m_text: Display Mode
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a065630cb0f233e478f8eac4ca11abbc, type: 2}
-  m_sharedMaterial: {fileID: 5108250371085086237, guid: a065630cb0f233e478f8eac4ca11abbc, type: 2}
+  m_sharedMaterial: {fileID: 5108250371085086237, guid: a065630cb0f233e478f8eac4ca11abbc,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2499,7 +2506,8 @@ MonoBehaviour:
     topRight: {r: 1, g: 1, b: 1, a: 1}
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
-  m_fontColorGradientPreset: {fileID: 11400000, guid: 18eed6a8c45b7434197cc91afb4482b9, type: 2}
+  m_fontColorGradientPreset: {fileID: 11400000, guid: 18eed6a8c45b7434197cc91afb4482b9,
+    type: 2}
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
@@ -2827,7 +2835,8 @@ MonoBehaviour:
   m_text: Settings
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a065630cb0f233e478f8eac4ca11abbc, type: 2}
-  m_sharedMaterial: {fileID: 5108250371085086237, guid: a065630cb0f233e478f8eac4ca11abbc, type: 2}
+  m_sharedMaterial: {fileID: 5108250371085086237, guid: a065630cb0f233e478f8eac4ca11abbc,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2842,7 +2851,8 @@ MonoBehaviour:
     topRight: {r: 1, g: 1, b: 1, a: 1}
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
-  m_fontColorGradientPreset: {fileID: 11400000, guid: 18eed6a8c45b7434197cc91afb4482b9, type: 2}
+  m_fontColorGradientPreset: {fileID: 11400000, guid: 18eed6a8c45b7434197cc91afb4482b9,
+    type: 2}
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}

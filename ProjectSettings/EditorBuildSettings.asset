@@ -5,21 +5,27 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Infima Games/Low Poly Shooter Pack - Free Sample/Scenes/S_Content_Overview.unity
     guid: 63fdc04a097eb0b4ba4af78a98dac40d
   - enabled: 1
-    path: Assets/Scenes/Game.unity
-    guid: 00f59864f195c12489830162058b6658
-  - enabled: 1
     path: Assets/Scenes/MainMenu.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/Game.unity
+    guid: 00f59864f195c12489830162058b6658
   - enabled: 1
     path: Assets/Scenes/PauseMenu.unity
     guid: 8b85adaa039d88449809e8a9253e8c0f
   - enabled: 1
     path: Assets/Scenes/Settings.unity
     guid: 51cf29397e86c6b47bdf0390ac5649a0
+  - enabled: 1
+    path: Assets/Scenes/Victory.unity
+    guid: dea7fbdcb10751540893fbebd85a11d8
+  - enabled: 1
+    path: Assets/Scenes/Defeat.unity
+    guid: 20bf52e32da59f442aed1819f5881e6c
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 9eb07e2d669e9c94e9d7d3c782a916f7,
       type: 2}

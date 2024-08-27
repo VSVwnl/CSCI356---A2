@@ -15,19 +15,19 @@ namespace InfimaGames.LowPolyShooterPack
         
         [Tooltip("Sensitivity when looking around.")]
         [SerializeField]
-        private Vector2 sensitivity = new Vector2(1, 1);
+        public Vector2 sensitivity = new Vector2(1, 1);
 
         [Tooltip("Minimum and maximum up/down rotation angle the camera can have.")]
         [SerializeField]
-        private Vector2 yClamp = new Vector2(-60, 60);
+        public Vector2 yClamp = new Vector2(-60, 60);
 
         [Tooltip("Should the look rotation be interpolated?")]
         [SerializeField]
-        private bool smooth;
+        public bool smooth;
 
         [Tooltip("The speed at which the look rotation is interpolated.")]
         [SerializeField]
-        private float interpolationSpeed = 25.0f;
+        public float interpolationSpeed = 25.0f;
         
         #endregion
         
@@ -36,40 +36,40 @@ namespace InfimaGames.LowPolyShooterPack
         /// <summary>
         /// Player Character.
         /// </summary>
-        private CharacterBehaviour playerCharacter;
+        public CharacterBehaviour playerCharacter;
         /// <summary>
         /// The player character's rigidbody component.
         /// </summary>
-        private Rigidbody playerCharacterRigidbody;
+        public Rigidbody playerCharacterRigidbody;
 
         /// <summary>
         /// The player character's rotation.
         /// </summary>
-        private Quaternion rotationCharacter;
+        public Quaternion rotationCharacter;
         /// <summary>
         /// The camera's rotation.
         /// </summary>
-        private Quaternion rotationCamera;
+        public Quaternion rotationCamera;
 
         #endregion
         
         #region UNITY
 
-        private void Awake()
+        public void Awake()
         {
             //Get Player Character.
             playerCharacter = ServiceLocator.Current.Get<IGameModeService>().GetPlayerCharacter();
             //Cache the rigidbody.
             playerCharacterRigidbody = playerCharacter.GetComponent<Rigidbody>();
         }
-        private void Start()
+        public void Start()
         {
             //Cache the character's initial rotation.
             rotationCharacter = playerCharacter.transform.localRotation;
             //Cache the camera's initial rotation.
             rotationCamera = transform.localRotation;
         }
-        private void LateUpdate()
+        public void LateUpdate()
         {
             //Frame Input. The Input to add this frame!
             Vector2 frameInput = playerCharacter.IsCursorLocked() ? playerCharacter.GetInputLook() : default;
@@ -118,7 +118,7 @@ namespace InfimaGames.LowPolyShooterPack
         /// <summary>
         /// Clamps the pitch of a quaternion according to our clamps.
         /// </summary>
-        private Quaternion Clamp(Quaternion rotation)
+        public Quaternion Clamp(Quaternion rotation)
         {
             rotation.x /= rotation.w;
             rotation.y /= rotation.w;

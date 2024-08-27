@@ -1,88 +1,123 @@
-using System.Collections;
-using System.Collections.Generic;
+using InfimaGames.LowPolyShooterPack;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class SettingsManager : MonoBehaviour
 {
-        public AudioMixer audioMixer;
-        public MouseLook mouseLook;
+    public AudioMixer mainMixer; // Main game audio mixer
+    public CameraLook cameraLook;
+    public Slider sensitivitySlider;
+    public Slider volumeSlider; // Volume slider for controlling multiple mixers
 
-        private void Start()
+    private void Start()
+    {
+        // Load and apply saved settings
+        LoadSettings();
+
+        // Initialize sensitivity slider with saved sensitivity
+        if (sensitivitySlider != null && PlayerPrefs.HasKey("Sensitivity"))
         {
-            // Load and apply saved settings
-            LoadSettings();
+            sensitivitySlider.value = PlayerPrefs.GetFloat("Sensitivity");
         }
 
-        public void setVolume(float volume)
+        // Add listener to update sensitivity when slider changes
+        if (sensitivitySlider != null)
         {
-            Debug.Log("Volume = " + volume);
-            audioMixer.SetFloat("Volume", volume);
-            PlayerPrefs.SetFloat("Volume", volume);
+            sensitivitySlider.onValueChanged.AddListener(delegate { setMouseSensitivity(sensitivitySlider.value); });
         }
 
-        public void setMouseSensitivity(float sensitivity)
+        // Initialize volume slider with saved volume
+        if (volumeSlider != null && PlayerPrefs.HasKey("Volume"))
         {
-            Debug.Log("Sens = " + sensitivity);
-            mouseLook.sensitivityHor = sensitivity;
-            mouseLook.sensitivityVert = sensitivity;
-            PlayerPrefs.SetFloat("Sensitivity", sensitivity);
+            volumeSlider.value = PlayerPrefs.GetFloat("Volume");
         }
 
-        public void setDisplayMode(int mode)
+        // Add listener to update volume when slider changes
+        if (volumeSlider != null)
         {
-            Debug.Log("Display mode selected: " + mode);
+            volumeSlider.onValueChanged.AddListener(delegate { setVolume(volumeSlider.value); });
+        }
+    }
 
-            switch (mode)
-            {
-                case 0: // FullScreen
-                    Debug.Log("Display mode selected: FullScreen");
+    public void setVolume(float volume)
+    {
+        Debug.Log("Volume = " + volume);
+        // Convert volume to decibels
+        float volumeInDb = Mathf.Log10(volume) * 20;
 
-                    Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
-                    break;
-                case 1: // Borderless Windowed
-                    Debug.Log("Display mode selected: WindowedFullScreen");
-                    Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
-                    break;
-                case 2: // Windowed
-                    Debug.Log("Display mode selected: Windowed");
-                    Screen.fullScreenMode = FullScreenMode.Windowed;
-                    break;
-                default:
-                    Debug.LogWarning("Invalid display mode selected.");
-                    break;
-            }
-
-            PlayerPrefs.SetInt("DisplayMode", mode);
+        // Set the volume for the main mixer
+        if (mainMixer != null)
+        {
+            mainMixer.SetFloat("Volume", volumeInDb);
         }
 
-        private void LoadSettings()
+        PlayerPrefs.SetFloat("Volume", volume); // Save the volume setting
+        PlayerPrefs.Save(); // Save all changes immediately
+    }
+
+    public void setMouseSensitivity(float sensitivity)
+    {
+        Debug.Log("Sensitivity = " + sensitivity);
+        cameraLook.sensitivity = new Vector2(sensitivity, sensitivity); // Adjust both X and Y sensitivity
+        PlayerPrefs.SetFloat("Sensitivity", sensitivity); // Save the sensitivity setting
+        PlayerPrefs.Save(); // Save all changes immediately
+    }
+
+    public void setDisplayMode(int mode)
+    {
+        Debug.Log("Display mode selected: " + mode);
+
+        switch (mode)
         {
-            // Load volume setting
-            if (PlayerPrefs.HasKey("Volume"))
-            {
-                float savedVolume = PlayerPrefs.GetFloat("Volume");
-                setVolume(savedVolume);
-            }
-
-            // Load mouse sensitivity setting
-            if (PlayerPrefs.HasKey("Sensitivity"))
-            {
-                float savedSensitivity = PlayerPrefs.GetFloat("Sensitivity");
-                setMouseSensitivity(savedSensitivity);
-            }
-
-            // Load display mode setting
-            if (PlayerPrefs.HasKey("DisplayMode"))
-            {
-                int savedMode = PlayerPrefs.GetInt("DisplayMode");
-                setDisplayMode(savedMode);
-            }
+            case 0: // FullScreen
+                Debug.Log("Display mode selected: FullScreen");
+                Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+                break;
+            case 1: // Borderless Windowed
+                Debug.Log("Display mode selected: WindowedFullScreen");
+                Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+                break;
+            case 2: // Windowed
+                Debug.Log("Display mode selected: Windowed");
+                Screen.fullScreenMode = FullScreenMode.Windowed;
+                break;
+            default:
+                Debug.LogWarning("Invalid display mode selected.");
+                break;
         }
 
-        public void ReturnMainMenu()
+        PlayerPrefs.SetInt("DisplayMode", mode); // Save the display mode setting
+        PlayerPrefs.Save(); // Save all changes immediately
+    }
+
+    private void LoadSettings()
+    {
+        // Load volume setting
+        if (PlayerPrefs.HasKey("Volume"))
         {
-            SceneManager.LoadScene("MainMenu");
+            float savedVolume = PlayerPrefs.GetFloat("Volume");
+            setVolume(savedVolume); // Apply saved volume
         }
+
+        // Load mouse sensitivity setting
+        if (PlayerPrefs.HasKey("Sensitivity"))
+        {
+            float savedSensitivity = PlayerPrefs.GetFloat("Sensitivity");
+            setMouseSensitivity(savedSensitivity); // Apply saved sensitivity
+        }
+
+        // Load display mode setting
+        if (PlayerPrefs.HasKey("DisplayMode"))
+        {
+            int savedMode = PlayerPrefs.GetInt("DisplayMode");
+            setDisplayMode(savedMode); // Apply saved display mode
+        }
+    }
+
+    public void ReturnMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
 }
