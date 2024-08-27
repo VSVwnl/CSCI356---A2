@@ -31,7 +31,7 @@ public class EscManager : MonoBehaviour
         pauseMenuUI.SetActive(false);
         Time.timeScale = 1f; // Resume game time
         isPaused = false;
-        EnableGameControls(true); // Example function to re-enable controls
+        EnableGameControls(true); // Re-enable controls
     }
 
     void Pause()
@@ -39,14 +39,15 @@ public class EscManager : MonoBehaviour
         pauseMenuUI.SetActive(true);
         Time.timeScale = 0f; // Freeze game time
         isPaused = true;
-        // Optionally, disable or pause certain game components here
-        EnableGameControls(false); // Example function to disable controls
+        EnableGameControls(false); // Disable controls
     }
 
     public void OpenSettings()
     {
         Time.timeScale = 1f; // Ensure time is normal before loading settings
-        SceneManager.LoadScene("PauseMenu");
+        // Store the current scene name before loading settings
+        GameManager.currentSceneName = SceneManager.GetActiveScene().name;
+        SceneManager.LoadScene("Settings", LoadSceneMode.Additive);
     }
 
     public void ReturnToMainMenu()
@@ -57,8 +58,6 @@ public class EscManager : MonoBehaviour
 
     private void EnableGameControls(bool enable)
     {
-        // Example function to enable or disable game controls
-        // Replace with your actual control scripts or methods
         var player = GameObject.FindWithTag("Player");
         if (player != null)
         {

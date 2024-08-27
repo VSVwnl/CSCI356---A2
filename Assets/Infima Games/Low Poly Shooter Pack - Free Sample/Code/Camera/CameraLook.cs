@@ -136,6 +136,11 @@ namespace InfimaGames.LowPolyShooterPack
             return rotation;
         }
 
+        public void SetSensitivity(float newSensitivityX, float newSensitivityY)
+        {
+            sensitivity = new Vector2(newSensitivityX, newSensitivityY);
+        }
+
         #endregion
     }
 }

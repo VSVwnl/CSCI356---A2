@@ -5,6 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+    
+
+
     public void PlayGame()
     {
         SceneManager.LoadScene("Game");
@@ -12,7 +15,9 @@ public class MainMenu : MonoBehaviour
 
     public void OpenSettingsScene()
     {
-        SceneManager.LoadScene("Settings");
+        // Store the current scene name before loading the settings scene
+       
+        SceneManager.LoadScene("Settings", LoadSceneMode.Additive);
     }
 
     public void QuitGame()

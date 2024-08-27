@@ -1,4 +1,3 @@
-using InfimaGames.LowPolyShooterPack;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
@@ -6,26 +5,25 @@ using UnityEngine.UI;
 
 public class PauseMenuManager : MonoBehaviour
 {
-    public AudioMixer mainMixer;
-    public CameraLook cameraLook;
-    public Slider sensitivitySlider;
-    public Slider volumeSlider;
+    public AudioMixer mainMixer; // Main game audio mixer
+    public Slider brightnessSlider;
+    public Slider volumeSlider; // Volume slider for controlling multiple mixers
 
     private void Start()
     {
         // Load and apply saved settings
         LoadSettings();
 
-        // Initialize sensitivity slider with saved sensitivity
-        if (sensitivitySlider != null && PlayerPrefs.HasKey("Sensitivity"))
+        // Initialize brightness slider with saved brightness
+        if (brightnessSlider != null && PlayerPrefs.HasKey("Brightness"))
         {
-            sensitivitySlider.value = PlayerPrefs.GetFloat("Sensitivity");
+            brightnessSlider.value = PlayerPrefs.GetFloat("Brightness");
         }
 
-        // Add listener to update sensitivity when slider changes
-        if (sensitivitySlider != null)
+        // Add listener to update brightness when slider changes
+        if (brightnessSlider != null)
         {
-            sensitivitySlider.onValueChanged.AddListener(delegate { setMouseSensitivity(sensitivitySlider.value); });
+            brightnessSlider.onValueChanged.AddListener(delegate { SetBrightness(brightnessSlider.value); });
         }
 
         // Initialize volume slider with saved volume
@@ -37,11 +35,11 @@ public class PauseMenuManager : MonoBehaviour
         // Add listener to update volume when slider changes
         if (volumeSlider != null)
         {
-            volumeSlider.onValueChanged.AddListener(delegate { setVolume(volumeSlider.value); });
+            volumeSlider.onValueChanged.AddListener(delegate { SetVolume(volumeSlider.value); });
         }
     }
 
-    public void setVolume(float volume)
+    public void SetVolume(float volume)
     {
         Debug.Log("Volume = " + volume);
         // Convert volume to decibels
@@ -57,15 +55,19 @@ public class PauseMenuManager : MonoBehaviour
         PlayerPrefs.Save(); // Save all changes immediately
     }
 
-    public void setMouseSensitivity(float sensitivity)
+    public void SetBrightness(float brightness)
     {
-        Debug.Log("Sensitivity = " + sensitivity);
-        cameraLook.sensitivity = new Vector2(sensitivity, sensitivity); // Adjust both X and Y sensitivity
-        PlayerPrefs.SetFloat("Sensitivity", sensitivity); // Save the sensitivity setting
+        Debug.Log("Setting brightness to: " + brightness);
+        // Update brightness setting here
+        // This example assumes brightness affects a material or UI element.
+        // Implement your own logic to apply brightness changes in the game.
+        RenderSettings.ambientIntensity = brightness; // Example of setting ambient light intensity
+
+        PlayerPrefs.SetFloat("Brightness", brightness); // Save the brightness setting
         PlayerPrefs.Save(); // Save all changes immediately
     }
 
-    public void setDisplayMode(int mode)
+    public void SetDisplayMode(int mode)
     {
         Debug.Log("Display mode selected: " + mode);
 
@@ -98,25 +100,25 @@ public class PauseMenuManager : MonoBehaviour
         if (PlayerPrefs.HasKey("Volume"))
         {
             float savedVolume = PlayerPrefs.GetFloat("Volume");
-            setVolume(savedVolume); // Apply saved volume
+            SetVolume(savedVolume); // Apply saved volume
         }
 
-        // Load mouse sensitivity setting
-        if (PlayerPrefs.HasKey("Sensitivity"))
+        // Load brightness setting
+        if (PlayerPrefs.HasKey("Brightness"))
         {
-            float savedSensitivity = PlayerPrefs.GetFloat("Sensitivity");
-            setMouseSensitivity(savedSensitivity); // Apply saved sensitivity
+            float savedBrightness = PlayerPrefs.GetFloat("Brightness");
+            SetBrightness(savedBrightness); // Apply saved brightness
         }
 
         // Load display mode setting
         if (PlayerPrefs.HasKey("DisplayMode"))
         {
             int savedMode = PlayerPrefs.GetInt("DisplayMode");
-            setDisplayMode(savedMode); // Apply saved display mode
+            SetDisplayMode(savedMode); // Apply saved display mode
         }
     }
 
-    public void ReturnToGame()
+    public void ReturnMainMenu()
     {
         SceneManager.LoadScene("Game");
     }

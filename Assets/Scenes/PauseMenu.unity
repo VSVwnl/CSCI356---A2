@@ -621,6 +621,10 @@ MonoBehaviour:
   yClamp: {x: -60, y: 60}
   smooth: 0
   interpolationSpeed: 25
+  playerCharacter: {fileID: 0}
+  playerCharacterRigidbody: {fileID: 0}
+  rotationCharacter: {x: 0, y: 0, z: 0, w: 0}
+  rotationCamera: {x: 0, y: 0, z: 0, w: 0}
 --- !u!81 &932737682
 AudioListener:
   m_ObjectHideFlags: 0
@@ -1032,7 +1036,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1586095453}
         m_TargetAssemblyTypeName: PauseMenuManager, Assembly-CSharp
-        m_MethodName: setVolume
+        m_MethodName: SetVolume
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1306,7 +1310,7 @@ GameObject:
   - component: {fileID: 1505466124}
   - component: {fileID: 1505466125}
   m_Layer: 5
-  m_Name: SensSlider
+  m_Name: BrightnessSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1388,7 +1392,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1586095453}
         m_TargetAssemblyTypeName: PauseMenuManager, Assembly-CSharp
-        m_MethodName: setMouseSensitivity
+        m_MethodName: SetBrightness
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1483,7 +1487,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1586095453}
         m_TargetAssemblyTypeName: PauseMenuManager, Assembly-CSharp
-        m_MethodName: ReturnToGame
+        m_MethodName: ReturnMainMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1588,7 +1592,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Sensitivity
+  m_text: Brightness
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a065630cb0f233e478f8eac4ca11abbc, type: 2}
   m_sharedMaterial: {fileID: 5108250371085086237, guid: a065630cb0f233e478f8eac4ca11abbc,
@@ -1617,7 +1621,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18.25
+  m_fontSize: 20.1
   m_fontSizeBase: 84
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1716,9 +1720,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainMixer: {fileID: 24100000, guid: 3fcdb23bde063e94fa0b60ccf87604d6, type: 2}
-  effectsMixer: {fileID: 24100000, guid: 8ad688440b4b6e148bbbf96e41bb2146, type: 2}
-  cameraLook: {fileID: 932737681}
-  sensitivitySlider: {fileID: 1505466125}
+  brightnessSlider: {fileID: 1505466125}
   volumeSlider: {fileID: 1358874774}
 --- !u!1 &1600438526
 GameObject:

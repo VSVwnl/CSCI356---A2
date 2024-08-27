@@ -6,7 +6,7 @@ AudioMixerController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: AM_Default
+  m_Name: MasterMixer
   m_OutputGroup: {fileID: 0}
   m_MasterGroup: {fileID: 24300002}
   m_Snapshots:
@@ -15,10 +15,12 @@ AudioMixerController:
   m_SuspendThreshold: -80
   m_EnableSuspend: 1
   m_UpdateMode: 0
-  m_ExposedParameters: []
+  m_ExposedParameters:
+  - guid: 82c4dae01cf0dec468cf70c5b71405ef
+    name: MyExposedParam
   m_AudioMixerGroupViews:
   - guids:
-    - 89ac416638507be45a2fd0c6132e68b7
+    - 9b1ae3d97d3e2364cbfc2955a1707a40
     name: View
   m_CurrentViewIndex: 0
   m_TargetSnapshot: {fileID: 24500006}
@@ -30,10 +32,10 @@ AudioMixerGroupController:
   m_PrefabAsset: {fileID: 0}
   m_Name: Master
   m_AudioMixer: {fileID: 24100000}
-  m_GroupID: 89ac416638507be45a2fd0c6132e68b7
+  m_GroupID: 9b1ae3d97d3e2364cbfc2955a1707a40
   m_Children: []
-  m_Volume: b6494b71360b629439b277851f4c2d10
-  m_Pitch: 352b6b097baee204aab238891c39998a
+  m_Volume: 82c4dae01cf0dec468cf70c5b71405ef
+  m_Pitch: 2c7577c33370c2641b2b580bb875c5a2
   m_Send: 00000000000000000000000000000000
   m_Effects:
   - {fileID: 24400004}
@@ -48,9 +50,9 @@ AudioMixerEffectController:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 
-  m_EffectID: e9a0f402742f70140bb9d11492559e01
+  m_EffectID: 29c74b487b44da7439445b3ecd887baa
   m_EffectName: Attenuation
-  m_MixLevel: a4d63af498e17374cb7b62928de1c505
+  m_MixLevel: aef75f1919c335e4097f6fda0309e8ed
   m_Parameters: []
   m_SendTarget: {fileID: 0}
   m_EnableWetMix: 0
@@ -63,7 +65,9 @@ AudioMixerSnapshotController:
   m_PrefabAsset: {fileID: 0}
   m_Name: Snapshot
   m_AudioMixer: {fileID: 24100000}
-  m_SnapshotID: e1621fbc7cbab3a4dab1ffdc0b3463cc
+  m_SnapshotID: 528d980cb1fcf7e43b06d73927c8e539
   m_FloatValues:
-    b6494b71360b629439b277851f4c2d10: 0
+    4eebcb9063566be4bb8fe4bbf5c430b9: 0.025578512
+    82c4dae01cf0dec468cf70c5b71405ef: 0.025578512
+    e9e569876863a7a42981d2ce2ebcf97f: -80
   m_TransitionOverrides: {}
