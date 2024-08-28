@@ -13,6 +13,7 @@ public class Enemy : MonoBehaviour
 
     private EnemyState currentState;
     private NavMeshAgent agent;
+    [SerializeField]
     private GameObject player;
     public Animator animator;
     public NavMeshAgent Agent { get => agent; }
@@ -26,7 +27,7 @@ public class Enemy : MonoBehaviour
     [Header("Weapon Values")]
     public Transform gunBarrel;
     public GameObject gun;
-
+ 
     [Range(0.1f, 10f)]
     public float fireRate; // Rate of fire in bullets per second
 
@@ -50,7 +51,7 @@ public class Enemy : MonoBehaviour
     private int wayPointIndex = 0;
     public int enemyType = 0;
 
-    void Awake()
+    void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         player = GameObject.FindGameObjectWithTag("Player");
@@ -115,18 +116,21 @@ public class Enemy : MonoBehaviour
             float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
             if (distanceToPlayer <= sightDistance)
             {
-                Vector3 targetDirection = player.transform.position - transform.position - (Vector3.up * eyeHeight);
+                Vector3 targetDirection = player.transform.position - transform.position;
                 float angleToPlayer = Vector3.Angle(targetDirection, transform.forward);
-
-                if (angleToPlayer <= fieldOfView / 2)
+                
+                if(angleToPlayer < fieldOfView)
+                // if(targetDirection.magnitude < distanceToPlayer)
+                // if (angleToPlayer <= fieldOfView / 2)
                 {
-                    Ray ray = new Ray(transform.position + (Vector3.up * eyeHeight), targetDirection.normalized);
+                    Ray ray = new Ray(transform.position, targetDirection.normalized);
                     RaycastHit hitInfo;
 
                     if (Physics.Raycast(ray, out hitInfo, sightDistance))
                     {
                         if (hitInfo.transform.gameObject.CompareTag("Player"))
                         {
+                            Debug.Log("Player detected within sight.");
                             return true;
                         }
                     }
@@ -135,6 +139,7 @@ public class Enemy : MonoBehaviour
         }
         return false;
     }
+
 
     private void PositionUIAboveEnemy()
     {
@@ -328,22 +333,24 @@ public class Enemy : MonoBehaviour
 
     private void Attack()
     {
-        if (CanSeePlayer()) // Check if the enemy can see the player
+        if (CanSeePlayer())
         {
             if (!isAttacking)
             {
+                Debug.Log("Enemy starting attack.");
                 StartAttack();
             }
 
-            // Shoot if the fire rate timer allows
             if (Time.time >= nextFireTime)
             {
+                Debug.Log("Enemy shooting.");
                 Shoot();
-                nextFireTime = Time.time + 1f / fireRate; // Set the time for the next allowed shot
+                nextFireTime = Time.time + 1f / fireRate;
             }
         }
         else
         {
+            Debug.Log("Player no longer in sight, stopping attack.");
             StopAttack();
             currentState = EnemyState.Patrol;
         }
@@ -351,12 +358,12 @@ public class Enemy : MonoBehaviour
 
     private void Shoot()
     {
+        Debug.Log("Enemy firing bullet.");
+
         Transform gunbarrel = gunBarrel;
         GameObject bullet = Instantiate(Resources.Load("Bullet") as GameObject, gunbarrel.position, gunbarrel.rotation);
         Vector3 shootDirection = (player.transform.position - gunbarrel.position).normalized;
         bullet.GetComponent<Rigidbody>().velocity = shootDirection * 40;
-
-        Debug.Log("Shoot");
     }
 
     public void Die()

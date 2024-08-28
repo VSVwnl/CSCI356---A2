@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.015446277, g: 0.0074450723, b: 0.0017790615, a: 1}
+  m_IndirectSpecularColor: {r: 0.015446313, g: 0.0074450993, b: 0.0017790738, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -492,6 +492,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ca55fc9a8d29b4bbe8eaabde8cef7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   animator: {fileID: 30031337}
   path: {fileID: 2064411719}
   sightDistance: 10
@@ -6315,7 +6316,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timeRemaining: 900
   timerText: {fileID: 314650640}
-  bossWarningText: {fileID: 0}
 --- !u!1 &333190845
 GameObject:
   m_ObjectHideFlags: 0
@@ -6518,6 +6518,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ca55fc9a8d29b4bbe8eaabde8cef7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   animator: {fileID: 349759492}
   path: {fileID: 9167226662186620205}
   sightDistance: 10
@@ -7281,6 +7282,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ca55fc9a8d29b4bbe8eaabde8cef7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   animator: {fileID: 405465037}
   path: {fileID: 2012811712}
   sightDistance: 10
@@ -12054,11 +12056,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ca55fc9a8d29b4bbe8eaabde8cef7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   animator: {fileID: 828324575}
   path: {fileID: 1183718677}
   sightDistance: 10
   fieldOfView: 20
-  eyeHeight: 1.7
+  eyeHeight: 1.65
   gunBarrel: {fileID: 1451134515}
   gun: {fileID: 1979691125}
   fireRate: 1.5
@@ -13619,6 +13622,7 @@ Transform:
   - {fileID: 1154574858}
   - {fileID: 1613101715}
   - {fileID: 1905099158}
+  - {fileID: 1162592120}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &967979640
@@ -16408,6 +16412,52 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &1162592119
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1162592120}
+  - component: {fileID: 1162592121}
+  m_Layer: 0
+  m_Name: EnemyManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1162592120
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1162592119}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 959844245}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1162592121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1162592119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 417ab928e0d54a84b87a63383ccdd52b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetGameObject: {fileID: 1531256688}
+  delay: 2
 --- !u!1 &1166328092
 GameObject:
   m_ObjectHideFlags: 0
@@ -16732,6 +16782,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ca55fc9a8d29b4bbe8eaabde8cef7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   animator: {fileID: 1180583787}
   path: {fileID: 1921229145}
   sightDistance: 10
@@ -17253,6 +17304,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ca55fc9a8d29b4bbe8eaabde8cef7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   animator: {fileID: 1185345979}
   path: {fileID: 391487043}
   sightDistance: 10
@@ -23529,11 +23581,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ca55fc9a8d29b4bbe8eaabde8cef7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   animator: {fileID: 1521557276}
   path: {fileID: 1763204422}
   sightDistance: 10
   fieldOfView: 20
-  eyeHeight: 1.7
+  eyeHeight: 1.65
   gunBarrel: {fileID: 426328561}
   gun: {fileID: 525326959}
   fireRate: 1.5
@@ -23725,6 +23778,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Enemies
+      objectReference: {fileID: 0}
+    - target: {fileID: 7147767637511649129, guid: 4b1d318961836cc419580977a3baaffb,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7147767637511649129, guid: 4b1d318961836cc419580977a3baaffb,
         type: 3}
@@ -24009,6 +24067,12 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 349759514}
   m_SourcePrefab: {fileID: 100100000, guid: 4b1d318961836cc419580977a3baaffb, type: 3}
+--- !u!1 &1531256688 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7147767637511649129, guid: 4b1d318961836cc419580977a3baaffb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1531256687}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1539182685
 GameObject:
   m_ObjectHideFlags: 0
@@ -24272,11 +24336,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ca55fc9a8d29b4bbe8eaabde8cef7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   animator: {fileID: 1552648223}
   path: {fileID: 129873801}
   sightDistance: 10
   fieldOfView: 60
-  eyeHeight: 1
+  eyeHeight: 1.9
   gunBarrel: {fileID: 1497130070}
   gun: {fileID: 48326906}
   fireRate: 1
@@ -27425,6 +27490,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ca55fc9a8d29b4bbe8eaabde8cef7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   animator: {fileID: 1780242778}
   path: {fileID: 9167226662186620205}
   sightDistance: 10
@@ -28584,6 +28650,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ca55fc9a8d29b4bbe8eaabde8cef7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   animator: {fileID: 1837213750}
   path: {fileID: 1865956861}
   sightDistance: 10
@@ -30867,11 +30934,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ca55fc9a8d29b4bbe8eaabde8cef7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   animator: {fileID: 1926658544}
   path: {fileID: 129873801}
   sightDistance: 10
   fieldOfView: 60
-  eyeHeight: 1
+  eyeHeight: 1.9
   gunBarrel: {fileID: 1181073293}
   gun: {fileID: 1805563361}
   fireRate: 1
@@ -31201,11 +31269,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ca55fc9a8d29b4bbe8eaabde8cef7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   animator: {fileID: 1943778872}
   path: {fileID: 1183718677}
   sightDistance: 10
   fieldOfView: 20
-  eyeHeight: 1.7
+  eyeHeight: 1.65
   gunBarrel: {fileID: 1678836920}
   gun: {fileID: 1451349693}
   fireRate: 1.5
@@ -33947,7 +34016,7 @@ PrefabInstance:
     - target: {fileID: 2748913124992463393, guid: 19eadcf8fbed56b4da77ca94c1b4145f,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2748913124992463393, guid: 19eadcf8fbed56b4da77ca94c1b4145f,
         type: 3}
@@ -34243,7 +34312,7 @@ PrefabInstance:
     - target: {fileID: 6311201337086346178, guid: 19eadcf8fbed56b4da77ca94c1b4145f,
         type: 3}
       propertyPath: m_Center.y
-      value: 1.11
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6430441992001771035, guid: 19eadcf8fbed56b4da77ca94c1b4145f,
         type: 3}

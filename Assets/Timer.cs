@@ -6,11 +6,11 @@ public class Timer : MonoBehaviour
 {
     public float timeRemaining = 900; // 15 minutes in seconds
     public Text timerText;
-    public Text bossWarningText; // New text to show when the timer hits 0
+    //public Text bossWarningText; // New text to show when the timer hits 0
 
     void Start()
     {
-        bossWarningText.gameObject.SetActive(false); // Hide boss warning text at the start
+        //bossWarningText.gameObject.SetActive(false); // Hide boss warning text at the start
     }
 
     void Update()
@@ -20,10 +20,11 @@ public class Timer : MonoBehaviour
             timeRemaining -= Time.deltaTime;
             UpdateTimerDisplay(timeRemaining);
         }
+        /*
         else
         {
             TriggerBoss();
-        }
+        }*/
     }
 
     void UpdateTimerDisplay(float timeToDisplay)
@@ -40,7 +41,7 @@ public class Timer : MonoBehaviour
         timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
-    void TriggerBoss()
+    /*void TriggerBoss()
     {
         // Show boss warning text
         bossWarningText.gameObject.SetActive(true);
@@ -49,4 +50,5 @@ public class Timer : MonoBehaviour
         // Logic to trigger boss appearance
         Debug.Log("Boss is coming!");
     }
+    */
 }
